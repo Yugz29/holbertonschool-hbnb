@@ -1,10 +1,10 @@
-# HBnB Evolution
+# 🏠 HBnB Evolution
 
 HBnB Evolution is a simplified version of AirBnB, developed as an educational project to explore full-stack development, object-oriented architecture, and API design.
 
 ---
 
-## Project Objective
+## 📍 Project Objective
 
 The main goal of HBnB Evolution is to provide a **modular and robust booking platform**, where users can:
 
@@ -15,7 +15,7 @@ The main goal of HBnB Evolution is to provide a **modular and robust booking pla
 
 ---
 
-## Part 1: Technical Documentation ✅
+## Part 1: Technical Documentation  ✅
 
 The first phase of the project focuses on **UML documentation** and the overall application structure. It includes:
 
@@ -33,7 +33,7 @@ The first phase of the project focuses on **UML documentation** and the overall 
 
 ---
 
-## Next Steps
+## 🔜 Next Steps
 
 * Full implementation of CRUD operations for all entities
 * Integration with a database for data persistence
