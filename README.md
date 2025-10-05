@@ -15,7 +15,7 @@ The main goal of HBnB Evolution is to provide a **modular and robust booking pla
 
 ---
 
-## Part 1: Technical Documentation (in progress)
+## Part 1: Technical Documentation ✅
 
 The first phase of the project focuses on **UML documentation** and the overall application structure. It includes:
 
