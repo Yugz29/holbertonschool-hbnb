@@ -78,6 +78,7 @@ class BaseModel {
     +delete()
     +to_dict()
     +create()
+    +delete()
     +update(attrs)
     +list(filters)
 }
@@ -90,7 +91,6 @@ class User {
     +Bool is_admin
     +register()
     +update_profile()
-    +delete()
 }
 
 class Place {
