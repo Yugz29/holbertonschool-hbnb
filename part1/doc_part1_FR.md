@@ -68,7 +68,7 @@ Il existe cinq classes principales :
 | `Place "1" --> "*" Review : receives` | Un lieu peut recevoir plusieurs avis                                                         |
 | `Place "*" --> "*" Amenity : has`     | Un lieu peut avoir plusieurs équipements, et un équipement peut appartenir à plusieurs lieux |
 
-'''mermaid
+```mermaid
 classDiagram
 class BaseModel {
     +UUID id
@@ -119,7 +119,7 @@ User "1" *-- "*" Place : owns
 User "1" *-- "*" Review : writes
 Place "1" *-- "*" Review : receives
 Place "*" o-- "*" Amenity : has
-'''
+```
 
 *Explication :*
 Toutes les entités héritent de **BaseModel**, qui centralise les champs communs (`id`, `created_at`, `updated_at`) et les opérations CRUD (`create()`, `update()`, `delete()`, `list()`).
