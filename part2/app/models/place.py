@@ -1,6 +1,5 @@
 from app.models.base_model import BaseModel
 from app.models.user import User
-from app.models.review import Review
 from app.models.amenity import Amenity
 
 
@@ -38,6 +37,7 @@ class Place(BaseModel):
 
     def add_review(self, review):
         """Add a review instance to the place"""
+        from app.models.review import Review
         if not isinstance(review, Review):
             raise TypeError("review must be a Review instance")
         self.reviews.append(review)
