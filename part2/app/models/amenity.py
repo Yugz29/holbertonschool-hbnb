@@ -2,7 +2,7 @@ from app.models.base_model import BaseModel
 
 
 class Amenity(BaseModel):
-    """Class representif an Amenity entity"""
+    """Class representing an Amenity entity"""
 
     def __init__(self, name):
         super().__init__()
