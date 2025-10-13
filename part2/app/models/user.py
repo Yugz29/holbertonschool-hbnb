@@ -50,7 +50,7 @@ class User(BaseModel):
         """Verify email requirements"""
         if not isinstance(email, str):
             raise TypeError("email must be a string")
-        if email == "":
+        if not email:
             raise ValueError("email is required")
         if "@" not in email:
             raise ValueError("email must be a valid email address")
