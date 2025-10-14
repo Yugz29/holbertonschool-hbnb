@@ -66,3 +66,6 @@ class User(BaseModel):
             "is_admin": self._is_admin
         })
         return base_dict
+
+    def __repr__(self):
+        return f"<User {self._first_name} {self._last_name} ({self._email})>"
