@@ -41,7 +41,7 @@ class Review(BaseModel):
 
     @staticmethod
     def user_validation(user):
-        """Verify if place exists"""
+        """Verify if user exists"""
         if not isinstance(user, User):
             raise TypeError(f"user must be a User instance")
         return user
