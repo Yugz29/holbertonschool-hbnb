@@ -45,3 +45,14 @@ class Review(BaseModel):
         if not isinstance(user, User):
             raise TypeError(f"user must be a User instance")
         return user
+    
+    def to_dict(self):
+        """Return a dictionary representation"""
+        base_dict = super().to_dict()
+        base_dict.update({
+            "text": self._text,
+            "rating": self._rating,
+            "place": self._place,
+            "user": self._user
+        })
+        return base_dict

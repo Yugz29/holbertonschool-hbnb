@@ -55,3 +55,14 @@ class User(BaseModel):
         if "@" not in email:
             raise ValueError("email must be a valid email address")
         return email
+
+    def to_dict(self):
+        """Return a dictionary representation of Place"""
+        base_dict = super().to_dict()
+        base_dict.update({
+            "first_name": self.__first_name,
+            "last_name": self.__last_name,
+            "email": self._email,
+            "is_admin": self._is_admin
+        })
+        return base_dict
