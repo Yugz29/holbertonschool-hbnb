@@ -19,8 +19,7 @@ class Review(BaseModel):
         if not value:
             raise ValueError(f"{field_name} is required")
         if len(value) > max_length:
-            raise ValueError(f"{field_name} must be less than {max_length} \
-                                characters")
+            raise ValueError(f"{field_name} must be less than {max_length} characters")
         return value
 
     @staticmethod
@@ -52,7 +51,7 @@ class Review(BaseModel):
         base_dict.update({
             "text": self._text,
             "rating": self._rating,
-            "place": self._place,
-            "user": self._user
+            "place": self._place.to_dict() if hasattr(self._place, "to_dict") else str(self._place),
+            "user": self._user.to_dict() if hasattr(self._user, "to_dict") else str(self._user)
         })
         return base_dict
