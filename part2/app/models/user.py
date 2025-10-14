@@ -57,11 +57,11 @@ class User(BaseModel):
         return email
 
     def to_dict(self):
-        """Return a dictionary representation of Place"""
+        """Return a dictionary representation of User"""
         base_dict = super().to_dict()
         base_dict.update({
-            "first_name": self.__first_name,
-            "last_name": self.__last_name,
+            "first_name": self._first_name,
+            "last_name": self._last_name,
             "email": self._email,
             "is_admin": self._is_admin
         })
