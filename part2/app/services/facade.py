@@ -45,28 +45,7 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, amenity_data)
         return self.amenity_repo.get(amenity_id)
 
-    """review methods"""
-    def create_review(self, review_data):
-        review = Review(**review_data)
-        self.review_repo.add(review)
-        return review
-
-    def get_review(self, review_id):
-        return self.review_repo.get(review_id)
-
-    def get_all_reviews(self):
-        return self.review_repo.get_all()
-
-    def get_reviews_by_place(self, place_id):
-        all_review = self.get_all_reviews
-
-    def update_review(self, review_id, review_data):
-        self.review_repo.update(review_id, review_data)
-        return self.review_repo.get(review_id)
-
-    def delete_review(self, review_id):
-        self.review_repo.delete(review_id)
-
+    """place methods"""
     def create_place(self, place_data):
         place = Place(**place_data)
         self.place_repo.add(place)
@@ -91,3 +70,30 @@ class HBnBFacade:
     def update_place(self, place_id, place_data):
         self.place_repo.update(place_id, place_data)
         return self.get_place(place_id)
+
+    """review methods"""
+    def create_review(self, review_data):
+        review = Review(**review_data)
+        self.review_repo.add(review)
+        return review
+
+    def get_review(self, review_id):
+        return self.review_repo.get(review_id)
+
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
+
+    def get_reviews_by_place(self, place_id):
+        all_reviews = self.get_all_reviews()
+        matching_reviews = []
+        for review in all_reviews:
+            if review.place_id == place_id:
+                matching_reviews.append(review)
+        return matching_reviews
+
+    def update_review(self, review_id, review_data):
+        self.review_repo.update(review_id, review_data)
+        return self.review_repo.get(review_id)
+
+    def delete_review(self, review_id):
+        self.review_repo.delete(review_id)
