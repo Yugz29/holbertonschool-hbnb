@@ -73,6 +73,19 @@ class HBnBFacade:
 
     """review methods"""
     def create_review(self, review_data):
+        if not self.get_user(review_data['user_id']):
+            return None
+        if not self.get_place(review_data['place_id']):
+            return None
+        
+        rating = review_data.get('rating')
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
+            return None
+        
+        text = review_data.get('text')
+        if not text or not isinstance(text, str):
+            return None
+        
         review = Review(**review_data)
         self.review_repo.add(review)
         return review
@@ -92,6 +105,25 @@ class HBnBFacade:
         return matching_reviews
 
     def update_review(self, review_id, review_data):
+        review = self.get_review(review_id)
+        if not review:
+            return None
+        
+        if 'rating' in review_data:
+            rating = review_data['rating']
+            if not isinstance(rating, int) or not (1 <= rating <= 5):
+                return None
+
+        if 'user_id' in review_data and not self.get_user(review_data['user_id']):
+            return None
+        if 'place_id' in review_data and not self.get_place(review_data['place_id']):
+            return None
+        
+        if 'text' in review_data:
+            text = review_data['text']
+            if not text or not isinstance(text, str):
+                return None
+        
         self.review_repo.update(review_id, review_data)
         return self.review_repo.get(review_id)
 
