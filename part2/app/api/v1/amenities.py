@@ -19,8 +19,8 @@ class AmenityList(Resource):
         
         if not name:
             return {'error': 'Invalid input data'}, 400
-        new_amenity = facade.create_amenity(amenity_data)
-        
+        new_amenity = facade.create_amenity({'name': name})
+
         if not new_amenity:
             return {'error': 'Invalid input data'}, 400
         return {'id': new_amenity.id, 'name': new_amenity.name}, 201
@@ -54,5 +54,5 @@ class AmenityResource(Resource):
         if not name:
             return {'error': 'Invalid input data'}, 400
 
-        updated_amenity = facade.update_amenity(amenity_id, amenity_data)
+        updated_amenity = facade.update_amenity(amenity_id, {'name': name})
         return {'id': updated_amenity.id, 'name': updated_amenity.name}, 200
