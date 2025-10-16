@@ -31,6 +31,7 @@ class Place(BaseModel):
         if owner is not None and not isinstance(owner, User):
             raise TypeError("owner must be a User instance")
         self.owner = owner
+        self.owner_id = owner.id if owner else None
 
         self.reviews = []
         self.amenities = []
