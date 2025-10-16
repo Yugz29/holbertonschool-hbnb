@@ -38,7 +38,7 @@ class PlaceList(Resource):
         data = request.json
         try:
             new_place = facade.create_place(data)
-            return {'message': 'Place created', 'id': new_place['id']}, 201
+            return {'message': 'Place created', 'id': new_place.id}, 201
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -46,7 +46,8 @@ class PlaceList(Resource):
     def get(self):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
-        return {'places': places}, 200
+        places_dicts = [place.to_dict() for place in places]
+        return {'places': places_dicts}, 200
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -54,10 +55,10 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        place = facade.get_place_by_id(place_id)
+        place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
-        return place, 200
+        return place.to_dict(), 200
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
@@ -70,6 +71,6 @@ class PlaceResource(Resource):
             updated_place = facade.update_place(place_id, data)
             if not updated_place:
                 return {'error': 'Place not found'}, 404
-            return {'message': 'Place updated', 'place': updated_place}, 200
+            return {'message': 'Place updated', 'place': updated_place.to_dict()}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
