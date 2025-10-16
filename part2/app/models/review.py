@@ -8,8 +8,8 @@ class Review(BaseModel):
         super().__init__()
         self._text = self.string_validation(text, "text")
         self._rating = self.rating_validation(rating)
-        self._place = self.place_validation(place)
-        self._user = self.user_validation(user)
+        self._place_id = self.place_validation(place)
+        self._user_id = self.user_validation(user)
 
     @property
     def text(self):
@@ -21,11 +21,11 @@ class Review(BaseModel):
 
     @property
     def user_id(self):
-        return getattr(self._user, "id", None)
+        return getattr(self._user_id, "id", None)
 
     @property
     def place_id(self):
-        return getattr(self._place, "id", None)
+        return getattr(self._place_id, "id", None)
 
     @staticmethod
     def string_validation(value, field_name, max_length=100):
