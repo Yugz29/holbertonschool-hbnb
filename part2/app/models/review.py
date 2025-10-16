@@ -11,6 +11,22 @@ class Review(BaseModel):
         self._place = self.place_validation(place)
         self._user = self.user_validation(user)
 
+    @property
+    def text(self):
+        return self._text
+
+    @property
+    def rating(self):
+        return self._rating
+
+    @property
+    def user_id(self):
+        return getattr(self._user, "id", None)
+
+    @property
+    def place_id(self):
+        return getattr(self._place, "id", None)
+
     @staticmethod
     def string_validation(value, field_name, max_length=100):
         """Verify text requirements"""
