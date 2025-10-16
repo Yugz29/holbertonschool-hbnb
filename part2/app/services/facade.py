@@ -47,8 +47,21 @@ class HBnBFacade:
 
     """place methods"""
     def create_place(self, place_data):
+        if 'owner_id' in place_data:
+            owner = self.user_repo.get(place_data['owner_id'])
+            place_data['owner'] = owner
+            del place_data['owner_id']
+
+        amenities = place_data.pop("amenities", [])
+
         place = Place(**place_data)
         self.place_repo.add(place)
+
+        for name in amenities:
+            amenity = self.amenity_repo.get_by_attribute('name', name)
+            if amenity:
+                place.add_amenity(amenity)
+
         return place
 
     def get_place(self, place_id):
