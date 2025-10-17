@@ -14,10 +14,18 @@ class Review(BaseModel):
     @property
     def text(self):
         return self._text
+    
+    @text.setter
+    def text(self, value):
+        self._text = self.string_validation(value, "text")
 
     @property
     def rating(self):
         return self._rating
+    
+    @rating.setter
+    def rating(self, value):
+        self._rating = self.rating_validation(value)
 
     @property
     def user_id(self):
