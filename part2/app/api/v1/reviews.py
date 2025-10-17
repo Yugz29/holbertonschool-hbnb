@@ -85,7 +85,6 @@ class ReviewResource(Resource):
         updated_review = facade.update_review(review_id, {'text': text, 'rating': rating})
         if not updated_review:
             return {'error': 'Review not found or invalide data'}, 404
-        
         return {'message': 'Review updated successfully'}
 
     @api.response(200, 'Review deleted successfully')
