@@ -56,5 +56,20 @@ class TestAmenityEndpoints(unittest.TestCase):
         response = self.client.delete('/api/v1/amenities/notfoundid/')
         self.assertEqual(response.status_code, 404)
 
+    def test_update_amenity_success(self):
+        update_data = {"name": "Updated Amenity"}
+        response = self.client.put(f'/api/v1/amenities/{self.amenity_id}', json=update_data)
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json() or {}
+        self.assertIn('id', data)
+        self.assertEqual(data.get('name'), "Updated Amenity")
+
+    def test_update_amenity_invalid(self):
+        update_data = {"name": ""}
+        response = self.client.put(f'/api/v1/amenities/{self.amenity_id}', json=update_data)
+        self.assertEqual(response.status_code, 400)
+        data = response.get_json() or {}
+        self.assertIn('error', data)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
