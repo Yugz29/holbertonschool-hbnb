@@ -3,7 +3,7 @@ from app import create_app
 
 
 class TestUserEndpoints(unittest.TestCase):
-    """Tests pour les endpoints User"""
+    """Tests for User endpoints"""
 
     def setUp(self):
         self.app = create_app()

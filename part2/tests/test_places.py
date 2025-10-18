@@ -3,7 +3,7 @@ import uuid
 from app import create_app
 
 class TestPlaceEndpoints(unittest.TestCase):
-    """Tests pour les endpoints Place"""
+    """Tests for Place endpoints"""
 
     def setUp(self):
         self.app = create_app()

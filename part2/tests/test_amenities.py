@@ -1,11 +1,8 @@
-"""
-Tests unitaires pour les endpoints Amenity de l'API HBnB.
-"""
 import unittest
 from app import create_app
 
 class TestAmenityEndpoints(unittest.TestCase):
-    """Tests pour les endpoints Amenity"""
+    """Tests for Amenity endpoints"""
 
     def setUp(self):
         self.app = create_app()
