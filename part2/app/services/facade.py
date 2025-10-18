@@ -46,7 +46,10 @@ class HBnBFacade:
         return amenity
 
     def get_amenity(self, amenity_id):
-        return self.amenity_repo.get(amenity_id)
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
+            return None
+        return amenity
 
     def get_all_amenities(self):
         return self.amenity_repo.get_all()
@@ -56,7 +59,11 @@ class HBnBFacade:
         return self.amenity_repo.get(amenity_id)
     
     def delete_amenity(self, amenity_id):
-        return self.amenity_repo.delete(amenity_id)
+        amenity = self.get_amenity(amenity_id)
+        if not amenity:
+            return None
+        self.amenity_repo.delete(amenity_id)
+        return amenity
 
     """place methods"""
     def create_place(self, place_data):
