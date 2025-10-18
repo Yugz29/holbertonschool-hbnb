@@ -9,8 +9,8 @@ Verify the functioning of the `User`, `Place`, `Review`, and `Amenity` endpoints
 
 | Endpoint | Method | Input | Expected Result | Actual Result | Status |
 |----------|---------|--------|-----------------|---------------|--------|
-| /api/v1/users/ | POST | `{"first_name":"Jane","last_name":"Doe","email":"jane.doe@example.com"}` | 201, JSON with `id` and user data | Compliant | ✅ |
-| /api/v1/users/ | POST | `{"first_name":"","last_name":"","email":"invalid-email"}` | 400, JSON with `error` | Compliant | ✅ |
+| /api/v1/users/ | POST | first_name, last_name, email | 201, JSON with `id` and user data | Compliant | ✅ |
+| /api/v1/users/ | POST | empty/invalid values | 400, JSON with `error` | Compliant | ✅ |
 | /api/v1/users/{id} | GET | - | 200, JSON with user data | Compliant | ✅ |
 | /api/v1/users/nonexistent | GET | - | 404, JSON with `error` | Compliant | ✅ |
 | /api/v1/users/{id} | PUT | Valid modification | 200, JSON with modified data | Compliant | ✅ |
