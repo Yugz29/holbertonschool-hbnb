@@ -38,6 +38,12 @@ hbnb/
 │   ├── persistence/
 │       ├── __init__.py
 │       ├── repository.py
+├── tests/
+│   ├── README.md
+│   ├── test_users.py
+│   ├── test_places.py
+│   ├── test_reviews.py
+│   ├── test_amenities.py
 ├── run.py
 ├── config.py
 ├── requirements.txt
@@ -108,7 +114,8 @@ http://127.0.0.1:5000/api/v1/
 | `run.py` | Entry point to start the Flask application. |
 | `config.py` | Environment configuration file. |
 | `repository.py` | Contains the abstract repository and in-memory implementation. |
-| `facade.py` | Implements the Facade pattern for managing communication between layers. |
+| `facade.py` | Implements the Facade pattern to coordinate business logic between API, models, and persistence layers. |
+| `tests/` | Contains unit and integration tests separated by domain (users, places, reviews, amenities). |
 
 ---
 

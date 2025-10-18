@@ -27,18 +27,29 @@ The first phase of the project focuses on **UML documentation** and the overall 
 
 ---
 
+## Part 2: Backend API and Testing  ✅
+
+The second phase delivers a fully functional backend API with comprehensive validation and unit testing. Key features include:
+
+* RESTful API endpoints for all entities supporting CRUD operations
+* Input validation and error handling to ensure data integrity
+* A facade layer abstracting business logic for cleaner architecture
+* Extensive unit tests covering models, views, and controllers
+
+---
+
 ## Project Structure
 
 * `part1/` : UML documentation and diagrams for Part 1
+* `part2/` : Backend API implementation, validation, and testing
 
 ---
 
 ## 🔜 Next Steps
 
-* Full implementation of CRUD operations for all entities
 * Integration with a database for data persistence
-* Unit and integration testing
-* Part 2: Full backend and API development
+* Frontend development and API consumption
+* Deployment and scalability improvements
 
 ---
 
