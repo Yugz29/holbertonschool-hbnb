@@ -38,7 +38,7 @@ class PlaceList(Resource):
         data = request.json
         try:
             new_place = facade.create_place(data)
-            return {'message': 'Place created', 'id': new_place.id}, 201
+            return new_place.to_dict(), 201
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -49,7 +49,7 @@ class PlaceList(Resource):
         places_dicts = [place.to_dict() for place in places]
         return {'places': places_dicts}, 200
 
-@api.route('/<place_id>')
+@api.route('/<string:place_id>')
 class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
@@ -66,11 +66,24 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        data = request.json
+        data = request.get_json()
+        if not data or 'title' not in data or 'price' not in data:
+            return {'error': 'Invalid input data'}, 400
+        if data['price'] <= 0:
+            return {'error': 'Price must be positive'}, 400
         try:
             updated_place = facade.update_place(place_id, data)
             if not updated_place:
                 return {'error': 'Place not found'}, 404
-            return {'message': 'Place updated', 'place': updated_place.to_dict()}, 200
+            return updated_place.to_dict(), 200
         except ValueError as e:
             return {'error': str(e)}, 400
+
+    @api.response(200, 'Place deleted successfully')
+    @api.response(404, 'Place not found')
+    def delete(self, place_id):
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+        facade.delete_place(place_id)
+        return {'message': 'Place deleted successfully'}, 200
