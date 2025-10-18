@@ -119,16 +119,6 @@ http://127.0.0.1:5000/api/v1/
 
 ---
 
-## 🧠 Future Improvements
-
-- Replace the in-memory repository with **SQLAlchemy**.
-- Add **CRUD operations** for users, places, reviews, and amenities.
-- Implement **authentication** and **authorization**.
-- Integrate **testing suite** with `pytest`.
-- Add **CI/CD pipeline** for automated deployment.
-
----
-
 ## 📚 Resources
 
 - [Flask Documentation](https://flask.palletsprojects.com/)
