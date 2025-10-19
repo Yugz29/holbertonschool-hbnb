@@ -9,7 +9,7 @@ class TestReviewEndpoints(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client()
 
-        # Créer un utilisateur reviewer avec email unique
+        # Create a reviewer user with a unique email address
         reviewer_email = f"reviewer_{uuid.uuid4().hex}@example.com"
         user_resp = self.client.post('/api/v1/users/', json={
             "email": reviewer_email,
@@ -20,7 +20,7 @@ class TestReviewEndpoints(unittest.TestCase):
         self.assertIsNotNone(self.user, "User creation response JSON is None")
         self.assertIn("id", self.user, f"User creation failed: {self.user}")
 
-        # Créer un owner avec email unique
+        # Create an owner with a unique email address
         owner_email = f"owner_{uuid.uuid4().hex}@example.com"
         owner_resp = self.client.post('/api/v1/users/', json={
             "email": owner_email,
@@ -31,7 +31,7 @@ class TestReviewEndpoints(unittest.TestCase):
         self.assertIsNotNone(self.owner, "Owner creation response JSON is None")
         self.assertIn("id", self.owner, f"Owner creation failed: {self.owner}")
 
-        # Créer un place avec owner_id, title, description, price, latitude, longitude
+        # Create a place with owner_id, title, description, price, latitude, longitude
         place_resp = self.client.post('/api/v1/places/', json={
             "title": "Test Place",
             "description": "A place to review",

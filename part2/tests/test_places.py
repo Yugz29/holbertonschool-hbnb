@@ -9,7 +9,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client()
 
-        # Créer un owner pour le place
+        # Create an owner for the place
         owner_resp = self.client.post('/api/v1/users/', json={
             "first_name": "Owner",
             "last_name": "Test",
