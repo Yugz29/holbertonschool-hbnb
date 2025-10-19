@@ -37,22 +37,7 @@ Verify the functioning of the `User`, `Place`, `Review`, and `Amenity` endpoints
 
 ---
 
-## 3. Review Tests
-
-| Endpoint | Method | Input | Expected Result | Actual Result | Status |
-|----------|---------|--------|-----------------|---------------|--------|
-| /api/v1/reviews/ | POST | Valid data | 201, JSON with `id`, `text`, `rating`, `user_id`, `place_id` | Compliant | ✅ |
-| /api/v1/reviews/ | POST | Invalid data (empty text, rating out of bounds) | 400, JSON with `error` | Compliant | ✅ |
-| /api/v1/reviews/{id} | GET | - | 200, JSON with review data | Compliant | ✅ |
-| /api/v1/reviews/nonexistent | GET | - | 404, JSON with `error` | Compliant | ✅ |
-| /api/v1/reviews/{id} | PUT | Valid data | 200, JSON with `message: Review updated successfully` | Compliant | ✅ |
-| /api/v1/reviews/{id} | PUT | Invalid data | 400, JSON with `error` | Compliant | ✅ |
-| /api/v1/reviews/{id} | DELETE | - | 200, JSON with `message: Review deleted successfully` | Compliant | ✅ |
-| /api/v1/reviews/nonexistent | DELETE | - | 404, JSON with `error` | Compliant | ✅ |
-
----
-
-## 4. Amenity Tests
+## 3. Amenity Tests
 
 | Endpoint | Method | Input | Expected Result | Actual Result | Status |
 |----------|---------|--------|-----------------|---------------|--------|
@@ -64,6 +49,21 @@ Verify the functioning of the `User`, `Place`, `Review`, and `Amenity` endpoints
 | /api/v1/amenities/{id} | PUT | Invalid data | 400, JSON with `error` | Compliant | ✅ |
 | /api/v1/amenities/{id} | DELETE | - | 200, deleted | Compliant | ✅ |
 | /api/v1/amenities/nonexistent | DELETE | - | 404, JSON with `error` | Compliant | ✅ |
+
+---
+
+## 4. Review Tests
+
+| Endpoint | Method | Input | Expected Result | Actual Result | Status |
+|----------|---------|--------|-----------------|---------------|--------|
+| /api/v1/reviews/ | POST | Valid data | 201, JSON with `id`, `text`, `rating`, `user_id`, `place_id` | Compliant | ✅ |
+| /api/v1/reviews/ | POST | Invalid data (empty text, rating out of bounds) | 400, JSON with `error` | Compliant | ✅ |
+| /api/v1/reviews/{id} | GET | - | 200, JSON with review data | Compliant | ✅ |
+| /api/v1/reviews/nonexistent | GET | - | 404, JSON with `error` | Compliant | ✅ |
+| /api/v1/reviews/{id} | PUT | Valid data | 200, JSON with `message: Review updated successfully` | Compliant | ✅ |
+| /api/v1/reviews/{id} | PUT | Invalid data | 400, JSON with `error` | Compliant | ✅ |
+| /api/v1/reviews/{id} | DELETE | - | 200, JSON with `message: Review deleted successfully` | Compliant | ✅ |
+| /api/v1/reviews/nonexistent | DELETE | - | 404, JSON with `error` | Compliant | ✅ |
 
 ---
 
