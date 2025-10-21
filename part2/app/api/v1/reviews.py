@@ -25,8 +25,14 @@ class ReviewList(Resource):
         user_id = data_review.get('user_id')
         place_id = data_review.get('place_id')
 
-        if not text or not isinstance(rating, int) or not user_id or not place_id:
-            return {'error': 'Invalid input data'}, 400
+        if not text or not isinstance(text, str):
+            return {'error': 'Text is required'}, 400
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
+            return {'error': 'Rating must be between 1 and 5'}, 400
+        if not user_id:
+            return {'error': 'User ID is required'}, 400
+        if not place_id:
+            return {'error': 'Place ID is required'}, 400
         
         new_review = facade.create_review({
             'text': text,
@@ -36,6 +42,12 @@ class ReviewList(Resource):
         })
 
         if not new_review:
+            user = facade.get_user(user_id)
+            place = facade.get_place(place_id)
+            if not user:
+                return {'error': 'User not found'}, 400
+            if not place:
+                return {'error': 'Place not found'}, 400
             return {'error': 'Could not create review'}, 400
         
         return {
@@ -79,12 +91,17 @@ class ReviewResource(Resource):
         text = data_review.get('text')
         rating = data_review.get('rating')
 
-        if not text or not rating:
-            return {'error': 'Invalid input data'}, 400
+        if 'text' in data_review and (not text or not isinstance(text, str)):
+            return {'error': 'Text is required'}, 400
+        if 'rating' in data_review and (not isinstance(rating, int) or not (1 <= rating <= 5)):
+            return {'error': 'Rating must be between 1 and 5'}, 400
         
-        updated_review = facade.update_review(review_id, {'text': text, 'rating': rating})
+        updated_review = facade.update_review(review_id, data_review)
         if not updated_review:
-            return {'error': 'Review not found or invalide data'}, 404
+            review = facade.get_review(review_id)
+            if not review:
+                return {'error': 'Review not found'}, 404
+            return {'error': 'Invalid input data'}, 400
         return {'message': 'Review updated successfully'}, 200
 
     @api.response(200, 'Review deleted successfully')
