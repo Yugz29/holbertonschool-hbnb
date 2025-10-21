@@ -25,8 +25,8 @@ class HBnBFacade:
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
 
-    def list_users(self):
-        return self.user_repo.get_all()
+    def get_all_users(self):
+        return self.user_repo.get_all() 
     
     def update_user(self, user_id, user_data):
         self.user_repo.update(user_id, user_data)
@@ -55,6 +55,9 @@ class HBnBFacade:
         return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, amenity_data):
+        amenity = self.get_amenity(amenity_id)
+        if not amenity:
+            return None
         self.amenity_repo.update(amenity_id, amenity_data)
         return self.amenity_repo.get(amenity_id)
     
@@ -69,16 +72,17 @@ class HBnBFacade:
     def create_place(self, place_data):
         if 'owner_id' in place_data:
             owner = self.user_repo.get(place_data['owner_id'])
+            if not owner:
+                raise ValueError("Owner not found")
             place_data['owner'] = owner
             del place_data['owner_id']
 
-        amenities = place_data.pop("amenities", [])
-
+        amenities_ids = place_data.pop("amenities", [])
         place = Place(**place_data)
         self.place_repo.add(place)
 
-        for name in amenities:
-            amenity = self.amenity_repo.get_by_attribute('name', name)
+        for aid in amenities_ids:
+            amenity = self.get_amenity(aid)
             if amenity:
                 place.add_amenity(amenity)
 
@@ -101,6 +105,26 @@ class HBnBFacade:
         return places
 
     def update_place(self, place_id, place_data):
+        place = self.get_place(place_id)
+        if not place:
+            return None
+        
+        if 'owner_id' in place_data:
+            owner = self.get_user(place_data['owner_id'])
+            if not owner:
+                raise ValueError("Owner not found")
+            place_data['owner'] = owner
+            del place_data['owner_id']
+
+        if 'amenities' in place_data:
+            valid_amenities = []
+            for amenity_id in place_data['amenities']:
+                amenity = self.get_amenity(amenity_id)
+                if not amenity:
+                    raise ValueError(f"Amenity {amenity_id} does not exist")
+                valid_amenities.append(amenity)
+            place_data['amenities'] = valid_amenities
+
         self.place_repo.update(place_id, place_data)
         return self.get_place(place_id)
     
@@ -123,8 +147,10 @@ class HBnBFacade:
        
        user = self.get_user(user_id)
        place = self.get_place(place_id)
-       if not user or not place:
-           return None
+       if not user:
+           raise ValueError("User not found")
+       if not place:
+           raise ValueError("Place not found")
        
        review = Review(text, rating, place, user)
        self.review_repo.add(review)
@@ -147,22 +173,31 @@ class HBnBFacade:
     def update_review(self, review_id, review_data):
         review = self.get_review(review_id)
         if not review:
-            return None
+            raise ValueError("Review not found")
         
         if 'rating' in review_data:
             rating = review_data['rating']
             if not isinstance(rating, int) or not (1 <= rating <= 5):
-                return None
+                raise ValueError("Rating must be between 1 and 5")
 
-        if 'user_id' in review_data and not self.get_user(review_data['user_id']):
-            return None
-        if 'place_id' in review_data and not self.get_place(review_data['place_id']):
-            return None
+        if 'user_id' in review_data:
+            user = self.get_user(review_data['user_id'])
+            if not user:
+                raise ValueError("User not found")
+            review_data['user']= user
+            del review_data['user_id']
+
+        if 'place_id' in review_data:
+            place= self.get_place(review_data['place_id'])
+            if not place:
+                raise ValueError("Place not found")
+            review_data['place_id'] = place
+            del review_data['place_id']
         
         if 'text' in review_data:
             text = review_data['text']
             if not text or not isinstance(text, str):
-                return None
+                raise ValueError("Text is required")
         
         self.review_repo.update(review_id, review_data)
         return self.review_repo.get(review_id)
