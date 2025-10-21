@@ -55,6 +55,9 @@ class AmenityResource(Resource):
             return {'error': 'Invalid input data'}, 400
 
         updated_amenity = facade.update_amenity(amenity_id, {'name': name})
+        if not updated_amenity:
+            return {'error': 'Amenity not found'}, 404
+        
         return updated_amenity.to_dict(), 200
 
     @api.response(200, 'Amenity deleted successfully')
