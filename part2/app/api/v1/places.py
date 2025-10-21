@@ -36,6 +36,18 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         data = request.json
+        if not data:
+            return {'error': 'Invalid input data'}, 400
+        
+        amenities_ids = data.get('amenities', [])
+        valid_amenities = []
+        for amenity_id in amenities_ids:
+            amenity = facade.get_amenity(amenity_id)
+            if not amenity:
+                return {'error': f"amenity with ID {amenity_id} does not exist"}, 400
+            valid_amenities.append(amenity)
+        data['amenities'] = valid_amenities
+
         try:
             new_place = facade.create_place(data)
             return new_place.to_dict(), 201
@@ -67,16 +79,36 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update a place's information"""
         data = request.get_json()
-        if not data or 'title' not in data or 'price' not in data:
+        if not data:
             return {'error': 'Invalid input data'}, 400
-        if data['price'] <= 0:
-            return {'error': 'Price must be positive'}, 400
+        
+        amenities_ids = data.get('amenities', [])
+        valid_amenities = []
+        for amenity_id in amenities_ids:
+            amenity = facade.get_amenity(amenity_id)
+            if not amenity:
+                return {'error': f"amenity with ID {amenity_id} does not exist"}, 400
+            valid_amenities.append(amenity)
+        data['amenities'] = valid_amenities
+        
+        if 'title' in data and not isinstance(data['title'], str):
+            return {'error': 'title must be a string'}, 400
+        if 'price' in data and data['price'] <= 0:
+            return {'error': 'price must be positive'}, 400
+        
+        owner_id = data.get('owner_id')
+        if owner_id:
+            owner = facade.get_user(owner_id)
+            if not owner:
+                return {'error': 'owner not found'}, 400
+            data['owner'] = owner
+
         try:
             updated_place = facade.update_place(place_id, data)
             if not updated_place:
                 return {'error': 'Place not found'}, 404
             return updated_place.to_dict(), 200
-        except ValueError as e:
+        except (ValueError, TypeError) as e:
             return {'error': str(e)}, 400
 
     @api.response(200, 'Place deleted successfully')
