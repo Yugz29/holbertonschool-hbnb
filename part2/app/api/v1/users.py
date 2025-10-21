@@ -32,6 +32,16 @@ class UserList(Resource):
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
+        
+    def get(self):
+        """Retrive the list of all users"""
+        users = facade.get_all_users()
+        return [{
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email
+        } for user in users], 200
 
 @api.route('/<string:user_id>')
 class UserResource(Resource):
