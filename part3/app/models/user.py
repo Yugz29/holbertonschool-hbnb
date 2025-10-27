@@ -1,12 +1,14 @@
+import bcrypt
 from app.models.base_model import BaseModel
 
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, password, is_admin=False):
         super().__init__()
         self._first_name = self.string_validation(first_name, "first_name")
         self._last_name = self.string_validation(last_name, "last_name")
         self._email = self.email_validation(email)
+        self.password = self.password_validation(password)
         self._is_admin = is_admin
 
     @staticmethod
@@ -55,6 +57,15 @@ class User(BaseModel):
         if "@" not in email:
             raise ValueError("email must be a valid email address")
         return email
+    
+    @staticmethod
+    def password_validation(self, password):
+        """Verify password"""
+        if not isinstance(password, str):
+            raise TypeError("password must be a string")
+        if not password:
+            raise ValueError("password is required")
+        return bcrypt.check_password_hash(self.password, password)
 
     def to_dict(self):
         """Return a dictionary representation of User"""
