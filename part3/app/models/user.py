@@ -9,7 +9,7 @@ class User(BaseModel):
         self._last_name = self.string_validation(last_name, "last_name")
         self._email = self.email_validation(email)
         self.hash_password(password)
-        self._is_admin = is_admin
+        self.is_admin = is_admin
 
     @staticmethod
     def string_validation(value, field_name, max_length=50):
