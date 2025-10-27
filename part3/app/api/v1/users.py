@@ -11,7 +11,7 @@ user_model = api.model('User', {
     'password': fields.String(required=True, description='Password of the user')
 })
 
-@api.route('/')
+@api.route('', strict_slashes=False)
 class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
@@ -44,7 +44,7 @@ class UserList(Resource):
             'email': user.email
         } for user in users], 200
 
-@api.route('/<string:user_id>')
+@api.route('/<string:user_id>', strict_slashes=False)
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
