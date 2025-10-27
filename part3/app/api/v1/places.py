@@ -1,6 +1,8 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 api = Namespace('places', description='Place operations')
 
@@ -24,7 +26,7 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
+    'owner_id': fields.String(description='ID of the owner'),
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
@@ -33,11 +35,16 @@ class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new place"""
-        data = request.json
+        current_user_id = get_jwt_identity()
+        data = request.get_json()
+
         if not data:
             return {'error': 'Invalid input data'}, 400
+        
+        data['owner_id'] = current_user_id
         
         amenities_ids = data.get('amenities', [])
         valid_amenities = []
@@ -76,32 +83,50 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
+        current_user_id = get_jwt_identity()
         data = request.get_json()
+
+        lat = data.get('latitude')
+        lng = data.get('longitude')
+
+        if lat is None or not (-90 <= lat <= 90):
+            return {'error': 'Latitude must be between -90 and 90'}, 400
+        if lng is None or not (-180 <= lng <= 180):
+           return {'error': 'Longitude must be between -180 and 180'}, 400
+
         if not data:
             return {'error': 'Invalid input data'}, 400
+
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
         
-        amenities_ids = data.get('amenities', [])
+        if place.owner_id != current_user_id:
+            return {'error': 'Unauthorized action'}, 403
+        
+        if 'owner_id' in data:
+            del data['owner_id']
+        
+        amenities_ids = data.get('amenities')
+        if amenities_ids is None or not amenities_ids:
+            return {'error': 'Amenities list is required'}, 400
+        
         valid_amenities = []
         for amenity_id in amenities_ids:
             amenity = facade.get_amenity(amenity_id)
             if not amenity:
                 return {'error': f"amenity with ID {amenity_id} does not exist"}, 400
             valid_amenities.append(amenity)
+
         data['amenities'] = valid_amenities
         
         if 'title' in data and not isinstance(data['title'], str):
             return {'error': 'title must be a string'}, 400
         if 'price' in data and data['price'] <= 0:
             return {'error': 'price must be positive'}, 400
-        
-        owner_id = data.get('owner_id')
-        if owner_id:
-            owner = facade.get_user(owner_id)
-            if not owner:
-                return {'error': 'owner not found'}, 400
-            data['owner'] = owner
 
         try:
             updated_place = facade.update_place(place_id, data)
@@ -113,9 +138,15 @@ class PlaceResource(Resource):
 
     @api.response(200, 'Place deleted successfully')
     @api.response(404, 'Place not found')
+    @jwt_required()
     def delete(self, place_id):
+        current_user_id = get_jwt_identity()
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
+        
+        if place.owner_id != current_user_id:
+            return {'error': 'Unauthorized action'}, 403
+
         facade.delete_place(place_id)
         return {'message': 'Place deleted successfully'}, 200
