@@ -132,6 +132,10 @@ class HBnBFacade:
         return self.place_repo.delete(place_id)
 
     """review methods"""
+    def user_has_reviewed_place(self, user_id, place_id):
+        reviews = self.get_all_reviews()
+        return any(r.user_id == user_id and r.place_id == place_id for r in reviews)
+
     def create_review(self, review_data):
        text = review_data.get('text')
        rating = review_data.get('rating')
@@ -139,11 +143,11 @@ class HBnBFacade:
        place_id = review_data.get('place_id')
 
        if not text or not isinstance(text, str):
-           return None
+           raise ValueError("Text is required")
        if not isinstance(rating, int) or not (1 <= rating <= 5):
-           return None
+           raise ValueError("Rating must be between 1 and 5")
        if not user_id or not place_id:
-           return None
+           raise ValueError("User ID and Place ID are required")
        
        user = self.get_user(user_id)
        place = self.get_place(place_id)
@@ -151,6 +155,11 @@ class HBnBFacade:
            raise ValueError("User not found")
        if not place:
            raise ValueError("Place not found")
+       
+       if place.owner_id == user_id:
+           raise ValueError("You cannot review your own place")
+       if self.user_has_reviewed_place(user_id, place_id):
+           raise ValueError("You have already reviewed this place")
        
        review = Review(text, rating, place, user)
        self.review_repo.add(review)
@@ -175,6 +184,10 @@ class HBnBFacade:
         if not review:
             raise ValueError("Review not found")
         
+        user_id = review_data.get('user_id')
+        if user_id and review.user_id != user_id:
+            raise PermissionError("Unauthorized action")
+
         if 'rating' in review_data:
             rating = review_data['rating']
             if not isinstance(rating, int) or not (1 <= rating <= 5):
@@ -202,5 +215,12 @@ class HBnBFacade:
         self.review_repo.update(review_id, review_data)
         return self.review_repo.get(review_id)
 
-    def delete_review(self, review_id):
+    def delete_review(self, review_id, user_id=None):
+        review = self.get_review(review_id)
+        if not review:
+            raise ValueError('Review not found')
+        if user_id and review.user_id != user_id:
+            raise PermissionError("Unauthorized action")
         self.review_repo.delete(review_id)
+        return review
+
