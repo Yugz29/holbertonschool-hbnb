@@ -28,7 +28,8 @@ class UserList(Resource):
                 'id': new_user.id,
                 'first_name': new_user.first_name,
                 'last_name': new_user.last_name,
-                'email': new_user.email
+                'email': new_user.email,
+                'password': new_user.password
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -57,7 +58,8 @@ class UserResource(Resource):
                 'id': user.id,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'email': user.email
+                'email': user.email,
+                'password': user.password
             }, 200
         except ValueError as e:
             return {'error': str(e)}, 404
