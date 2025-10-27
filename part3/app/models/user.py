@@ -8,7 +8,7 @@ class User(BaseModel):
         self._first_name = self.string_validation(first_name, "first_name")
         self._last_name = self.string_validation(last_name, "last_name")
         self._email = self.email_validation(email)
-        self.password = self.password_validation(password)
+        self.hash_password(password)
         self._is_admin = is_admin
 
     @staticmethod
@@ -58,13 +58,12 @@ class User(BaseModel):
             raise ValueError("email must be a valid email address")
         return email
     
-    @staticmethod
-    def password_validation(self, password):
-        """Verify password"""
-        if not isinstance(password, str):
-            raise TypeError("password must be a string")
-        if not password:
-            raise ValueError("password is required")
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+    
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self.password, password)
 
     def to_dict(self):
