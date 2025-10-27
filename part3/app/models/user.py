@@ -1,4 +1,4 @@
-from app import bcrypt
+from flask_bcrypt import generate_password_hash, check_password_hash
 from app.models.base_model import BaseModel
 
 
@@ -60,11 +60,11 @@ class User(BaseModel):
     
     def hash_password(self, password):
         """Hashes the password before storing it."""
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password = generate_password_hash(password).decode('utf-8')
     
     def verify_password(self, password):
         """Verifies if the provided password matches the hashed password."""
-        return bcrypt.check_password_hash(self.password, password)
+        return check_password_hash(self.password, password)
 
     def to_dict(self):
         """Return a dictionary representation of User"""
