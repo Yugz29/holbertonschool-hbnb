@@ -17,7 +17,12 @@ jwt = JWTManager()
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://user:password@localhost/nom_de_la_base'
+    app.config.from_object(config_class)
     db.init_app(app)
+    bcrypt.init_app(app)
+    jwt.init_app(app)
+
+
     api = Api(app, version='1.0', title='HBnB API',
               description='HBnB Application API', doc='/api/v1/')
 
@@ -27,7 +32,4 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1/auth')
     
-    app.config.from_object(config_class)
-    bcrypt.init_app(app)
-    jwt.init_app(app)
     return app
