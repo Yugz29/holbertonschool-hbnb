@@ -7,13 +7,17 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 from flask_jwt_extended import JWTManager
 from app.api.v1.auth import api as auth_ns
+from flask_sqlalchemy import SQLAlchemy
 
 
+db = SQLAlchemy()
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://user:password@localhost/nom_de_la_base'
+    db.init_app(app)
     api = Api(app, version='1.0', title='HBnB API',
               description='HBnB Application API', doc='/api/v1/')
 
