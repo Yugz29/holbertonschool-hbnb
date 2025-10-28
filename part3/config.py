@@ -13,11 +13,13 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
 
-class Production(Config):
+class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://user:password@localhost/hbnb_db"
 
 config = {
     'development': DevelopmentConfig,
+    'testing': TestingConfig,
+    'production': ProductionConfig,
     'default': DevelopmentConfig
 }
