@@ -49,6 +49,8 @@ class PlaceList(Resource):
         amenities_ids = data.get('amenities', [])
         valid_amenities = []
         for amenity_id in amenities_ids:
+            if hasattr(amenity_id, 'id'):
+                amenity_id = amenity_id.id
             amenity = facade.get_amenity(amenity_id)
             if not amenity:
                 return {'error': f"amenity with ID {amenity_id} does not exist"}, 400
@@ -116,6 +118,8 @@ class PlaceResource(Resource):
         
         valid_amenities = []
         for amenity_id in amenities_ids:
+            if hasattr(amenity_id, 'id'):
+                amenity_id = amenity_id.id
             amenity = facade.get_amenity(amenity_id)
             if not amenity:
                 return {'error': f"amenity with ID {amenity_id} does not exist"}, 400
