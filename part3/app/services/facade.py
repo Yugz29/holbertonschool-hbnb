@@ -152,7 +152,7 @@ class HBnBFacade:
        if not place:
            raise ValueError("Place not found")
        
-       review = Review(text, rating, place, user)
+       review = Review(text=text, rating=rating, place=place, user=user)
        self.review_repo.add(review)
        return review
 
@@ -188,10 +188,10 @@ class HBnBFacade:
             del review_data['user_id']
 
         if 'place_id' in review_data:
-            place= self.get_place(review_data['place_id'])
+            place = self.get_place(review_data['place_id'])
             if not place:
                 raise ValueError("Place not found")
-            review_data['place_id'] = place
+            review_data['place'] = place
             del review_data['place_id']
         
         if 'text' in review_data:
@@ -203,4 +203,8 @@ class HBnBFacade:
         return self.review_repo.get(review_id)
 
     def delete_review(self, review_id):
+        review = self.get_review(review_id)
+        if not review:
+            return None
         self.review_repo.delete(review_id)
+        return review
