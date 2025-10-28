@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from app import db
 
 class Repository(ABC):
     @abstractmethod
