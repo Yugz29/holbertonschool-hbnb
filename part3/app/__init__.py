@@ -8,15 +8,15 @@ from app.api.v1.reviews import api as reviews_ns
 from flask_jwt_extended import JWTManager
 from app.api.v1.auth import api as auth_ns
 from flask_sqlalchemy import SQLAlchemy
+import config
 
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
-def create_app(config_class="config.DevelopmentConfig"):
+def create_app(config_class=config.DevelopmentConfig):
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://user:password@localhost/nom_de_la_base'
     app.config.from_object(config_class)
     db.init_app(app)
     bcrypt.init_app(app)
