@@ -88,7 +88,9 @@ class PlaceResource(Resource):
     @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()
+        current_user_id = current_user.get('id')
+        is_admin = current_user.get('is_admin', False)
         data = request.get_json()
 
         lat = data.get('latitude')
@@ -106,7 +108,7 @@ class PlaceResource(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
         
-        if place.owner_id != current_user_id:
+        if not is_admin and place.owner_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
         
         if 'owner_id' in data:
@@ -144,12 +146,14 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     @jwt_required()
     def delete(self, place_id):
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()
+        current_user_id = current_user.get('id')
+        is_admin = current_user.get('is_admin', False)
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
         
-        if place.owner_id != current_user_id:
+        if not is_admin and place.owner_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
 
         facade.delete_place(place_id)
