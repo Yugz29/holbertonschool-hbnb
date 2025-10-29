@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('amenities', description='Amenity operations')
 
@@ -9,11 +10,16 @@ amenity_model = api.model('Amenity', {
 
 @api.route('/')
 class AmenityList(Resource):
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Admin privilege required')
     def post(self):
         """Register a new amenity"""
+        identity = get_jwt_identity()
+        if not identity or not identity.get('is_admin', False):
+            return {'error': 'Admin privilege required'}, 403
         amenity_data = api.payload or {}
         name = amenity_data.get('name', '').strip()
         
@@ -42,12 +48,17 @@ class AmenityResource(Resource):
             return {'error': 'Amenity not found'}, 404
         return amenity.to_dict(), 200
 
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Admin privilege required')
     def put(self, amenity_id):
         """Update an amenity's information"""
+        identity = get_jwt_identity()
+        if not identity or not identity.get('is_admin', False):
+            return {'error': 'Admin privilege required'},403
         amenity_data = api.payload or {}
         name = amenity_data.get('name', '').strip()
         
@@ -59,10 +70,14 @@ class AmenityResource(Resource):
             return {'error': 'Amenity not found'}, 404
         
         return updated_amenity.to_dict(), 200
-
+    @jwt_required()
     @api.response(200, 'Amenity deleted successfully')
     @api.response(404, 'Amenity not found')
+    @api.response(403, 'Admin privilege required')
     def delete(self, amenity_id):
+        identity = get_jwt_identity()
+        if not identity or not identity.get('is_admin', False):
+            return {'error': 'Admin privilege required'}, 403
         amenity = facade.delete_amenity(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
