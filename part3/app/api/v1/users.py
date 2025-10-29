@@ -18,8 +18,14 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new user"""
+        current_user_id = get_jwt_identity()
+        current_user = facade.get_user(current_user_id)
+        if not current_user or not getattr(current_user, 'is_admin', False):
+            return {'error': 'Admin privilege required'}, 403
+        
         user_data = api.payload
         try:
             if facade.get_user_by_email(user_data.get('email')):
@@ -71,9 +77,9 @@ class UserResource(Resource):
     def put(self, user_id):
         """Update user details"""
         current_user_id = get_jwt_identity()
-
-        if user_id != current_user_id:
-            return {'error': 'You can modify your own account'}, 403
+        current_user = facade.get_user(current_user_id)
+        if not current_user or not getattr(current_user, 'is_admin', False):
+            return {'error': 'Admin privilege required'}, 403
         
         user_data = api.payload.copy()
 
@@ -100,4 +106,3 @@ class UserResource(Resource):
         if not deleted:
             return {'error': 'User not found'}, 404
         return {'message': 'User deleted'}, 200
-    
