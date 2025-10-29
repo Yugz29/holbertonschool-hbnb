@@ -100,7 +100,9 @@ class ReviewResource(Resource):
     @jwt_required()
     def put(self, review_id):
         """Update a review's information"""
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()
+        current_user_id = current_user.get('id') if isinstance(current_user, dict) else current_user
+        is_admin = current_user.get('is_admin', False) if isinstance(current_user, dict) else False
         data_review = api.payload or {}
         text = data_review.get('text')
         rating = data_review.get('rating')
@@ -108,7 +110,7 @@ class ReviewResource(Resource):
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
-        if review.user_id != current_user_id:
+        if not is_admin and review.user_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
 
         if 'text' in data_review and (not text or not isinstance(text, str)):
@@ -129,12 +131,14 @@ class ReviewResource(Resource):
     @jwt_required()
     def delete(self, review_id):
         """Delete a review"""
-        current_user_id = get_jwt_identity()
+        current_user = get_jwt_identity()
+        current_user_id = current_user.get('id') if isinstance(current_user, dict) else current_user
+        is_admin = current_user.get('is_admin', False) if isinstance(current_user, dict) else False
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
         
-        if review.user_id != current_user_id:
+        if not is_admin and review.user_id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
         
         facade.delete_review(review_id)
