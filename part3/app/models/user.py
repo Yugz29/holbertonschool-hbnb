@@ -1,4 +1,4 @@
-from flask_bcrypt import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.base_model import BaseModel
 
 
@@ -8,12 +8,12 @@ class User(BaseModel):
         self._first_name = self.string_validation(first_name, "first_name")
         self._last_name = self.string_validation(last_name, "last_name")
         self._email = self.email_validation(email)
-        self.hash_password(password)
-        self.is_admin = is_admin
+        self._is_admin = bool(is_admin)
+        self._set_password(password)
 
+    """Validation Methods"""
     @staticmethod
     def string_validation(value, field_name, max_length=50):
-        """Verify first_name / last_name requirements"""
         if not isinstance(value, str):
             raise TypeError(f"{field_name} must be a string")
         if not value:
@@ -23,6 +23,18 @@ class User(BaseModel):
                                 characters")
         return value
 
+    @staticmethod
+    def email_validation(email):
+        """Verify email requirements"""
+        if not isinstance(email, str):
+            raise TypeError("email must be a string")
+        if not email:
+            raise ValueError("email is required")
+        if "@" not in email:
+            raise ValueError("email must be a valid email address")
+        return email
+
+    """Properties"""
     @property
     def first_name(self):
         return self._first_name
@@ -47,27 +59,23 @@ class User(BaseModel):
     def email(self, value):
         self._email = self.email_validation(value)
 
-    @staticmethod
-    def email_validation(email):
-        """Verify email requirements"""
-        if not isinstance(email, str):
-            raise TypeError("email must be a string")
-        if not email:
-            raise ValueError("email is required")
-        if "@" not in email:
-            raise ValueError("email must be a valid email address")
-        return email
+    @property
+    def is_admin(self):
+        return self._is_admin
     
-    def hash_password(self, password):
-        """Hashes the password before storing it."""
-        self.password = generate_password_hash(password).decode('utf-8')
+    @is_admin.setter
+    def is_admin(self, value):
+        self._is_admin = bool(value)
+
+    """Password Methods"""  
+    def _set_password(self, password):
+        self.password = generate_password_hash(password)
     
     def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
         return check_password_hash(self.password, password)
 
+    """Dictonary representation"""
     def to_dict(self):
-        """Return a dictionary representation of User"""
         base_dict = super().to_dict()
         base_dict.update({
             "first_name": self._first_name,
