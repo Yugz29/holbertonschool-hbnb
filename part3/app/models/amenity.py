@@ -1,18 +1,13 @@
 from app.models.base_model import BaseModel
+from app.extensions import db
 
 
 class Amenity(BaseModel):
-    """Class representing an Amenity entity"""
+    __tablename__ = 'amenities'
 
-    def __init__(self, name):
-        super().__init__()
-        if not isinstance(name, str):
-            raise TypeError("name must be a string")
-        if not name.strip():
-            raise ValueError("name cannot be empty")
-        if len(name) > 50:
-            raise ValueError("name cannot exceed 50 characters")
-        self.name = name
+    """Column"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
 
     def to_dict(self):
         """Return a dictionary representation of Amenity"""
