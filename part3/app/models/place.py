@@ -1,76 +1,20 @@
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.amenity import Amenity
+from app.extensions import db
 
 
 class Place(BaseModel):
     """Class representing a Place entity"""
+    __tablename__ = 'places'
 
-    def __init__(self, title, description="", price=0.0, latitude=0.0,
-                 longitude=0.0, owner=None):
-        super().__init__()
-        self.description = description
-        self._price = price
-        self._latitude = latitude
-        self._longitude = longitude
-        self._title = title
-        self._owner = owner
-        self.owner_id = owner.id if owner else None
-        self.reviews = []
-        self.amenities = []
-
-
-    @property
-    def title(self):
-        return self._title
-
-    @title.setter
-    def title(self, value):
-        if not isinstance(value, str):
-            raise TypeError("Title must be a string")
-        if len(value) > 100:
-            raise ValueError("Title too long")
-        self._title = value
-
-    @property
-    def price(self):
-        return self._price
-
-    @price.setter
-    def price(self, value):
-        if value < 0:
-            raise ValueError("Price must be positive")
-        self._price = value
-
-    @property
-    def latitude(self):
-        return self._latitude
-
-    @latitude.setter
-    def latitude(self, value):
-        if not (-90 <= value <= 90):
-            raise ValueError("Latitude must be between -90 and 90")
-        self._latitude = value
-
-    @property
-    def longitude(self):
-        return self._longitude
-
-    @longitude.setter
-    def longitude(self, value):
-        if not (-180 <= value <= 180):
-            raise ValueError("Longitude must be between -180 and 180")
-        self._longitude = value
-
-    @property
-    def owner(self):
-        return self._owner
-
-    @owner.setter
-    def owner(self, value):
-        if value is not None and not isinstance(value, User):
-            raise TypeError("Owner must be a User")
-        self._owner = value
+    """Columns"""
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
 
     def add_review(self, review):
         """Add a review instance to the place"""
