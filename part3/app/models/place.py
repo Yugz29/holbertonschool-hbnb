@@ -1,6 +1,9 @@
 from app.models.base_model import BaseModel
 from app.extensions import db
 from app.models.associations import place_amenity
+from app.models.user import User
+from app.models.review import Review
+from app.models.amenity import Amenity
 
 
 class Place(BaseModel, db.Model):
@@ -15,8 +18,9 @@ class Place(BaseModel, db.Model):
     user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
     
     """Relationships"""
-    reviews = db.relationship('Review', backref='place', lazy=True)
-    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery', backref=db.backref('places', lazy=True))
+    user = db.relationship('User', back_populates='places')
+    reviews = db.relationship('Review', back_populates='place', lazy=True)
+    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery', back_populates='places')
 
     def to_dict(self):
         """Return a dictionary representation of Place"""

@@ -12,8 +12,8 @@ class Review(BaseModel, db.Model):
     user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
     """Relationship"""
-    place = db.relationship('Place', back_populates='reviews')
     user = db.relationship('User', back_populates='reviews')
+    place = db.relationship('Place', back_populates='reviews')
     
     def to_dict(self):
         """Return a dictionary representation"""

@@ -14,9 +14,9 @@ class User(BaseModel, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     
     """Relationships"""
-    places = db.relationship('Place', backref='user', lazy=True)
-    reviews = db.relationship('Review', backref='user', lazy=True)
-
+    places = db.relationship('Place', back_populates='user', lazy=True)
+    reviews = db.relationship('Review', back_populates='user', lazy=True)
+    
     """Simple methods"""  
     def hash_password(self, password): # to confirm
         self.password = generate_password_hash(password)

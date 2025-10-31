@@ -2,6 +2,7 @@ from app.models.base_model import BaseModel
 from app.extensions import db
 from app.models.associations import place_amenity
 
+
 class Amenity(BaseModel, db.Model):
     __tablename__ = 'amenities'
 
@@ -12,8 +13,8 @@ class Amenity(BaseModel, db.Model):
     'Place',
     secondary=place_amenity,
     lazy='subquery',
-    backref=db.backref('amenities', lazy=True)
-    )
+    back_populates='amenities'
+)
     
     def to_dict(self):
         """Return a dictionary representation of Amenity"""
