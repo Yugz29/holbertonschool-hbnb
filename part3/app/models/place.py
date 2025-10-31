@@ -1,25 +1,27 @@
 from app.models.base_model import BaseModel
-from app.models.user import User
-from app.models.amenity import Amenity
 from app.extensions import db
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
 
+
+place_amenity = db.Table(
+    'place_amenity',
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
+)
 
 class Place(BaseModel, db.Model):
     __tablename__ = 'places'
 
     """Columns"""
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    owner_id = db.Column(db.String, db.ForeignKey('users.id'), nullable=False)
-    reviews_id = db.Column(db.String, db.ForeignKey('reviews.id'), nullable=False)
-    amenities_id = db.Column(db.String, db.ForeignKey('amenities.id'), nullable=False)
-
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    
+    """Relationships"""
+    reviews = db.relationship('Review', backref='place', lazy=True)
+    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery', backref=db.backref('places', lazy=True))
 
     def to_dict(self):
         """Return a dictionary representation of Place"""
