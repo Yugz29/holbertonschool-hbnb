@@ -1,12 +1,6 @@
 from app.models.base_model import BaseModel
 from app.extensions import db
-
-place_amenity = db.Table(
-    'place_amenity',
-    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
-    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
-)
-
+from app.models.associations import place_amenity
 
 class Amenity(BaseModel, db.Model):
     __tablename__ = 'amenities'
