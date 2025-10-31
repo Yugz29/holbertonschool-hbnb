@@ -2,13 +2,15 @@ from app.models.base_model import BaseModel
 from app.extensions import db
 
 
-class Review(BaseModel):
+class Review(BaseModel, db.Model):
     __tablename__ = 'reviews'
 
     """Columns"""
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Interger, nullable=False)
+    place_id = db.Column(db.String, db.ForeignKey('places.id'), nullable=False)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
     
     def to_dict(self):
         """Return a dictionary representation"""
