@@ -15,7 +15,7 @@ This architecture ensures scalability, maintainability, and clear separation of 
 ## 📁 Project Structure
 
 ```
-hbnb/
+part3/
 ├── app/
 │   ├── __init__.py
 │   ├── api/
@@ -44,6 +44,10 @@ hbnb/
 │   ├── test_places.py
 │   ├── test_reviews.py
 │   ├── test_amenities.py
+|── sql/
+|   |── README.md
+|   |── hbnb_crud_test.sql
+|   |── hbnb_schema.sql
 ├── run.py
 ├── config.py
 ├── requirements.txt
