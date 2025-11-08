@@ -38,16 +38,34 @@ The second phase delivers a fully functional backend API with comprehensive vali
 
 ---
 
+## Part 3: Enhanced Backend with Authentication and Database Integration  ✅
+
+The third phase focuses on strengthening the backend by integrating secure authentication mechanisms and robust database support. This phase aims to enhance security, data consistency, and scalability of the HBnB platform.
+
+Key features include:
+
+* Implementation of user authentication using token-based methods (e.g., JWT) to secure API endpoints
+* Role-based access control to differentiate permissions between regular users and administrators
+* Integration with a relational database management system (e.g., MySQL, PostgreSQL) for persistent data storage
+* Database schema design and migration scripts to support entities and relationships
+* Optimization of data retrieval with indexing and query tuning
+* Enhanced error handling to manage authentication failures and database exceptions
+* Additional unit and integration tests covering authentication workflows and database operations
+
+> This phase ensures a **secure and scalable backend foundation**, ready for production deployment and further frontend integration.
+
+---
+
 ## Project Structure
 
 * `part1/` : UML documentation and diagrams for Part 1
 * `part2/` : Backend API implementation, validation, and testing
+* `part3/` : Authentication, database integration, and security enhancements
 
 ---
 
 ## 🔜 Next Steps
 
-* Integration with a database for data persistence
 * Frontend development and API consumption
 * Deployment and scalability improvements
 
