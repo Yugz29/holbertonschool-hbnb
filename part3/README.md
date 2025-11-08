@@ -1,4 +1,4 @@
-# 🏠 HBnB part2
+# 🏠 HBnB part3
 
 ## Overview
 
@@ -6,7 +6,7 @@ The **HBnB API** is a modular Flask-based web application designed to manage cor
 This project follows a **three-layer architecture**:  
 - **Presentation Layer (API)** — Handles HTTP requests and responses.  
 - **Business Logic Layer (Services)** — Manages the core logic through the **Facade pattern**.  
-- **Persistence Layer (Repository)** — Handles object storage using an **in-memory repository**, to be replaced by a database later.
+- **Persistence Layer (Repository)** — Handles object storage using a **database-backed repository** with SQLAlchemy.
 
 This architecture ensures scalability, maintainability, and clear separation of concerns.
 
@@ -62,8 +62,8 @@ Implemented in `app/services/facade.py`, the **Facade pattern** centralizes comm
 This ensures that the logic remains consistent and easy to extend.
 
 ### **3. Persistence Layer (Repository)**
-Located in `app/persistence/repository.py`, this layer temporarily uses an **in-memory repository** to store and retrieve data objects.  
-It will later be replaced by a **database-backed repository** using SQLAlchemy.
+Located in `app/persistence/repository.py`, this layer now uses a **database-backed repository** with SQLAlchemy to persist and retrieve data objects.  
+This replaces the previous in-memory repository, providing durability and scalability.
 
 ---
 
@@ -89,7 +89,16 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### **4. Run the Application**
+### **4. Configure the Database**
+
+Ensure you have a supported database installed (e.g., PostgreSQL, MySQL, or SQLite).  
+Update the `SQLALCHEMY_DATABASE_URI` in `config.py` accordingly.
+
+### **5. Run Database Migrations**
+
+If using migrations, apply them to create the database schema.
+
+### **6. Run the Application**
 
 ```bash
 python run.py
@@ -112,8 +121,8 @@ http://127.0.0.1:5000/api/v1/
 | File | Description |
 |------|--------------|
 | `run.py` | Entry point to start the Flask application. |
-| `config.py` | Environment configuration file. |
-| `repository.py` | Contains the abstract repository and in-memory implementation. |
+| `config.py` | Environment configuration file, including database URI. |
+| `repository.py` | Contains the abstract repository and SQLAlchemy-backed implementation. |
 | `facade.py` | Implements the Facade pattern to coordinate business logic between API, models, and persistence layers. |
 | `tests/` | Contains unit and integration tests separated by domain (users, places, reviews, amenities). |
 
@@ -123,5 +132,6 @@ http://127.0.0.1:5000/api/v1/
 
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [Flask-RESTx Documentation](https://flask-restx.readthedocs.io/)
+- [SQLAlchemy Documentation](https://docs.sqlalchemy.org/)
 - [Python Project Structure Best Practices](https://realpython.com/python-application-layouts/)
 - [Facade Design Pattern in Python](https://refactoring.guru/design-patterns/facade/python/example)
