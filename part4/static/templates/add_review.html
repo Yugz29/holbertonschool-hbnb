@@ -4,22 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Review</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+    <header>
+        <div class="container header-container">
+            <div class="header-logo">
+                <a href="index.html">
+                    <img src="../images/logo.png" alt="HBnB Logo" class="logo">
+                </a>
+            </div>
+            <nav class="header-nav">
+                <a href="login.html" class="login-button">Login</a>
+            </nav>
+        </div>
+    </header>
     <main>
-        <!-- Add something to idfentify the place you're reviewing -->
-        <form id="review-form">
-            <h2>Add a Review</h2>
-            <label for="review">Your Review:</label>
-            <textarea id="review" name="review" required></textarea>
-            <label for="rating">Rating:</label>
-            <select id="rating" name="rating" required>
-                <!-- Options for rating -->
-            </select>
-            <button type="submit">Submit Review</button>
-        </form>
+        <section class="add-review">
+            <h2>Reviewing Lovely Loft</h2>
+            <form id="review-form" class="form">
+                <label for="review">Your Review:</label>
+                <textarea id="review" name="review" required></textarea>
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="1">1 ★</option>
+                    <option value="2">2 ★★</option>
+                    <option value="3">3 ★★★</option>
+                    <option value="4">4 ★★★★</option>
+                    <option value="5">5 ★★★★★</option>
+                </select>
+                <button type="submit">Submit Review</button>
+            </form>
+        </section>
     </main>
-    <script src="{{ url_for('static', filename='js/add_review.js') }}"></script>
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 HBnB. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/add_review.js"></script>
 </body>
 </html>

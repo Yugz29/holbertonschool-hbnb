@@ -1,8 +1,4 @@
-/* 
-  This is a SAMPLE File to get you started. Follow the instructions on the project to complete the tasks. 
-  You'll probably need to override some of theese styles.
-*/
-
+/* Global styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -10,23 +6,259 @@
     font-family: Arial, sans-serif;
 }
 
+/* Body styles */
 body {
     background-color: #f4f4f4;
     color: #333;
 }
 
+/* Header styles */
 header {
-    background-color: #333;
+    background-color: #ffffff;
     color: #fff;
     padding: 1rem;
+    border-bottom: 4px solid #FF5A5F;
 }
 
-nav a {
-    color: #fff;
+/* Footer styles */
+.footer {
+    background-color: #FF5A5F;       /* couleur de fond */
+    color: #fff;                  /* texte blanc */
+    text-align: center;           /* centré */
+    padding: 20px;                /* espace autour du contenu */
+    font-size: 0.9rem;            /* taille du texte */
+}
+
+.footer a {
+    color: #333;               /* couleur des liens */
+    text-decoration: none;         
+    margin: 0 5px;                /* espacement entre les liens */
+}
+
+.footer a:hover {
+    text-decoration: underline;   /* effet au survol */
+}
+
+.header-container {
+    display: flex;
+    align-items: center;        /* center vertically logo and buttons */
+    justify-content: space-between; /* logo on left, nav on right */
+    padding: 1rem 2rem;
+}
+
+/* Navigation styles */
+nav a,
+.header-nav a {
+    color: #FF5A5F;             /* example color */
     text-decoration: none;
-    margin-left: 1rem;
+    margin-left: 1rem;          /* space between buttons */
 }
 
+/* Main content styles */
 main {
     padding: 2rem;
+}
+
+/* Login page styles */
+#login-form {
+    max-width: 400px;           /* largeur de la boîte de login */
+    margin: 50px auto;           /* centré horizontalement avec marge en haut */
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;          /* centre le texte à l'intérieur */
+}
+
+#login-form h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#login-form label {
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#login-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #FF5A5F; /* couleur cohérente avec les boutons */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#login-form button:hover {
+    background-color: #e04e51; /* léger hover */
+}
+
+/* Place cards styles */
+.place-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.place-card,
+.review-card {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+
+/* Default .place-card: no fixed width/min/max for non-index pages */
+.place-card {
+    flex: 1 1 auto;
+}
+
+/* On index page, keep place cards in flex with fixed min/max width */
+.places-list-index .place-card {
+    flex: 1 1 250px;
+    min-width: 250px;
+    max-width: 300px;
+}
+
+.place-card,
+.place-info {
+    text-align: center;
+}
+
+/* Place details styles */
+.place-details {
+    margin: 20px 0;
+}
+
+/* Place information card styles */
+.place-info {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+/* Center all text inside the place card */
+.place-info.place-card {
+    text-align: center;
+}
+
+/* Amenities list styles */
+.place-info.place-card ul {
+    list-style: none;      /* remove bullets */
+    padding: 0;            /* remove default left padding */
+    margin: 10px 0;        /* vertical margin */
+}
+
+.place-info.place-card ul li {
+    margin: 5px 0;
+}
+
+/* Place title styles */
+.place-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Details button styles */
+.details-button {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+/* Review card styles */
+/* (already included with .review-card in place cards section) */
+
+/* Add review section styles */
+.add-review {
+    margin-top: 30px;
+}
+
+/* Form styles */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Logo styles */
+.logo {
+    width: 120px;   /* desired width */
+    height: auto;   /* keep proportions */
+}
+
+/* Add Review page styles */
+.add-review {
+    max-width: 500px;          /* largeur de la section */
+    margin: 50px auto;          /* centré horizontalement avec marge en haut */
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.add-review h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.add-review p {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.add-review .form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.add-review label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.add-review textarea,
+.add-review select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.add-review button {
+    padding: 10px;
+    background-color: #FF5A5F;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-review button:hover {
+    background-color: #e04e51;
 }

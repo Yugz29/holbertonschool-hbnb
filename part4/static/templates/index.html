@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List of Places</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <header>
-        <nav>
-            <a href="{{ url_for('login') }}" id="login-link">Login</a>
-        </nav>
+        <div class="container header-container">
+            <div class="header-logo">
+                <a href="index.html">
+                    <img src="../images/logo.png" alt="HBnB Logo" class="logo">
+                </a>
+            </div>
+            <nav class="header-nav">
+                <a href="login.html" class="login-button">Login</a>
+            </nav>
+        </div>
     </header>
     <main>
         <section id="filter">
@@ -19,10 +26,29 @@
                 <!-- Options will be populated dynamically -->
             </select>
         </section>
-        <section id="places-list">
-            <!-- List of places will be populated dynamically -->
+        <section id="places-list" class="place-cards-container places-list-index">
+            <div class="place-card">
+                <h2>Lovely Loft</h2>
+                <p>Prix : 120€ / nuit</p>
+                <a href="place.html?id=1" class="details-button">Voir les détails</a>
+            </div>
+            <div class="place-card">
+                <h2>Studio Paris Centre</h2>
+                <p>Prix : 80€ / nuit</p>
+                <a href="place.html?id=2" class="details-button">Voir les détails</a>
+            </div>
+            <div class="place-card">
+                <h2>Villa du Soleil</h2>
+                <p>Prix : 250€ / nuit</p>
+                <a href="place.html?id=3" class="details-button">Voir les détails</a>
+            </div>
         </section>
     </main>
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 HBnB. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/scripts.js"></script>
 </body>
 </html>
