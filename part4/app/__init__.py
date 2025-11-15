@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restx import Api
 from app.extensions import db, bcrypt, jwt
 import config
@@ -18,6 +19,7 @@ def create_app(config_class=config.DevelopmentConfig):
     bcrypt.init_app(app)
     jwt.init_app(app)
 
+    CORS(app, resources={r"/*": {"origins": "http://localhost:5500"}})
 
     api = Api(app, version='1.0', title='HBnB API',
               description='HBnB Application API', doc='/api/v1/')
