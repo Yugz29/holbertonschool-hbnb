@@ -24,10 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.cookie = `token=${data.access_token}; path=/`;
         window.location.href = "index.html";
       } else {
-        alert("Login Failed");
+        const errorData = await response.json();
+        alert("Login Failed: " + (errorData.message || response.statusText));
       }
     } catch (err) {
       console.log(err);
+      alert("An unexpected error occurred. Please try again.");
     }
   });
 });

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from flask_restx import Api
 from app.extensions import db, bcrypt, jwt
@@ -14,12 +14,11 @@ def create_app(config_class=config.DevelopmentConfig):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
     
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
-
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5500"}})
 
     api = Api(app, version='1.0', title='HBnB API',
               description='HBnB Application API', doc='/api/v1/')
@@ -29,5 +28,13 @@ def create_app(config_class=config.DevelopmentConfig):
     api.add_namespace(places_ns, path='/api/v1/places')
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1/auth')
+
+    @app.route("/login")
+    def login_page():
+        return render_template("login.html")
+    
+    @app.route("/index")
+    def index_page():
+        return render_template("index.html")
     
     return app

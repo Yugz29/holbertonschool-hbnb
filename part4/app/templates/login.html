@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
         <div class="container header-container">
             <div class="header-logo">
                 <a href="index.html">
-                    <img src="../images/logo.png" alt="HBnB Logo" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HBnB Logo" class="logo">
                 </a>
             </div>
             <nav class="header-nav">
@@ -36,6 +36,6 @@
             <p>© 2025 HBnB. All rights reserved.</p>
         </div>
     </footer>
-    <script src="../js/login.js"></script>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 </body>
 </html>
