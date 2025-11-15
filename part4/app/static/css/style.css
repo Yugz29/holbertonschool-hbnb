@@ -175,10 +175,18 @@ main {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
 #login-form button:hover {
     background-color: #e04e51;
+}
+
+#error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
 }
 
 /* ========================

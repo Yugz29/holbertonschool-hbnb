@@ -14,7 +14,7 @@ def create_app(config_class=config.DevelopmentConfig):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
-    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     
     db.init_app(app)
     bcrypt.init_app(app)
