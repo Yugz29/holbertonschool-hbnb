@@ -5,3 +5,4 @@ flask-jwt-extended
 sqlalchemy
 flask_sqlalchemy
 pymysql
+flask-cors
