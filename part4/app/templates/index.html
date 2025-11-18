@@ -15,7 +15,7 @@
                 </a>
             </div>
             <nav class="header-nav">
-                <a href="{{ url_for('login_page') }}" class="login-button">Login</a>
+                <a id="login-link" href="{{ url_for('login_page') }}" class="login-button">Login</a>
             </nav>
         </div>
     </header>
@@ -23,25 +23,13 @@
         <section id="filter">
             <label for="price-filter">Max Price:</label>
             <select id="price-filter">
-                <!-- Options will be populated dynamically -->
+                <option value="All">All</option>
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
             </select>
         </section>
         <section id="places-list" class="place-cards-container places-list-index">
-            <div class="place-card">
-                <h2>Lovely Loft</h2>
-                <p>Prix : 120€ / nuit</p>
-                <a href="place.html?id=1" class="details-button">Voir les détails</a>
-            </div>
-            <div class="place-card">
-                <h2>Studio Paris Centre</h2>
-                <p>Prix : 80€ / nuit</p>
-                <a href="place.html?id=2" class="details-button">Voir les détails</a>
-            </div>
-            <div class="place-card">
-                <h2>Villa du Soleil</h2>
-                <p>Prix : 250€ / nuit</p>
-                <a href="place.html?id=3" class="details-button">Voir les détails</a>
-            </div>
         </section>
     </main>
     <footer class="footer">
