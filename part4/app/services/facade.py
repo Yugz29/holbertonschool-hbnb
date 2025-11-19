@@ -94,14 +94,14 @@ class HBnBFacade:
         if not place:
             return None
 
-        place.owner = self.user_repo.get(place.owner_id)
+        place.owner = self.user_repo.get(place.user_id)
         place.amenities = [self.amenity_repo.get(aid) for aid in getattr(place, 'amenity_ids', [])]
         return place
 
     def get_all_places(self):
         places = self.place_repo.get_all()
         for place in places:
-            place.owner = self.user_repo.get(place.owner_id)
+            place.owner = self.user_repo.get(place.user_id)
             place.amenities = [self.amenity_repo.get(aid) for aid in getattr(place, 'amenity_ids', [])]
         return places
 
