@@ -40,7 +40,7 @@ async function fetchPlaces(token) {
   }
 
   const data = await result.json();
-  displayPlaces(data);
+  displayPlaces(data.places);
   enableFiltering();
 }
 
@@ -51,11 +51,11 @@ function displayPlaces(data) {
   for (const place of data) {
     const div = document.createElement('div');
     div.classList.add('place-card');
-    div.dataset.price = place.price_by_night;
+    div.dataset.price = place.price;
 
     div.innerHTML = `
-      <h2>${place.name}</h2>
-      <p>Prix: ${place.price_by_night}€ / night</p>
+      <h2>${place.title}</h2>
+      <p>Prix: ${place.price}€ / night</p>
       <a href="place.html?id=${place.id}" class="details-button">View details</a>
     `;
     list.appendChild(div);
