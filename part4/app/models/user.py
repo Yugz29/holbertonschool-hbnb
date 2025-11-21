@@ -14,7 +14,7 @@ class User(BaseModel, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     
     """Relationships"""
-    places = db.relationship('Place', back_populates='user', lazy=True, foreign_keys='Place.owner_id')
+    places = db.relationship('Place', back_populates='owner', lazy=True, foreign_keys='Place.owner_id')
     reviews = db.relationship('Review', back_populates='user', lazy=True)
     
     """Simple methods"""  
