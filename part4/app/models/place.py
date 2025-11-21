@@ -15,7 +15,7 @@ class Place(BaseModel, db.Model):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('owner.id'), nullable=False)
     
     """Relationships"""
     user = db.relationship('User', back_populates='places')
