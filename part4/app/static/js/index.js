@@ -66,9 +66,12 @@ function enableFiltering() {
   const filter = document.getElementById('price-filter');
 
   filter.addEventListener('change', () => {
+    const maxPrice = filter.value === "All" ? Infinity : Number.parseInt(filter.value);
+    const cards = document.querySelectorAll('.place-card');
+
     for (const card of cards) {
       const price = Number.parseInt(card.dataset.price);
       card.style.display = price <= maxPrice ? "block" : "none";
     }
-  })
+  });
 }
