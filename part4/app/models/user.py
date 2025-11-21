@@ -14,17 +14,17 @@ class User(BaseModel, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     
     """Relationships"""
-    places = db.relationship('Place', back_populates='user', lazy=True)
+    places = db.relationship('Place', back_populates='user', lazy=True, foreign_keys='Place.owner_id')
     reviews = db.relationship('Review', back_populates='user', lazy=True)
     
     """Simple methods"""  
-    def hash_password(self, password): # to confirm
+    def hash_password(self, password):  # to hash password
         self.password = generate_password_hash(password)
     
     def verify_password(self, password):
         return check_password_hash(self.password, password)
 
-    """Dictonary representation"""
+    """Dictionary representation"""
     def to_dict(self):
         base_dict = super().to_dict()
         base_dict.update({
