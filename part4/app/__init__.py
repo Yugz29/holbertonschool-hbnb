@@ -37,4 +37,22 @@ def create_app(config_class=config.DevelopmentConfig):
     def index_page():
         return render_template("index.html")
     
+    @app.route("/place")
+    def place_page():
+        return render_template("place.html")
+    
+    from flask import request, jsonify
+
+    @app.route('/api/v1/auth/check', methods=['GET'])
+    def auth_check():
+        token = request.cookies.get('token')
+        if not token:
+            return jsonify({"authenticated": False}), 200
+        try:
+            # decode the JWT to verify its validity
+            jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            return jsonify({"authenticated": True}), 200
+        except Exception:
+            return jsonify({"authenticated": False}), 200
+    
     return app
