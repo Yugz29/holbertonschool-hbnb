@@ -31,5 +31,7 @@ class Place(BaseModel, db.Model):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
+            "reviews": [review.to_dict() for review in self.reviews],
+            "amenities": [amenity.to_dict() for amenity in self.amenities],
         })
         return base_dict
