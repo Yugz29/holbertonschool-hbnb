@@ -56,8 +56,7 @@ function displayPlaces(data) {
     div.innerHTML = `
       <h2>${place.title}</h2>
       <p>Prix: ${place.price}€ / night</p>
-      <a href="place.html?id=${place.id}" class="details-button">View details</a>
-    `;
+      <a href="/place?id=${place.id}" class="details-button">View details</a>`;
     list.appendChild(div);
   };
 }
