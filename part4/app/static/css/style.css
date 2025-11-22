@@ -273,3 +273,132 @@ main {
 .add-review button:hover {
     background-color: #e04e51;
 }
+/* ========================
+   PAGE: PLACE DETAILS
+======================== */
+.place-details {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.place-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.place-header h1 {
+    font-size: 2rem;
+    color: #FF5A5F;
+}
+
+.place-header p.price {
+    font-size: 1.2rem;
+    color: #FF5A5F;
+    font-weight: bold;
+}
+
+.place-details p.description {
+    margin: 15px 0;
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.place-details .amenities {
+    margin-top: 20px;
+}
+
+.place-details .amenities h2 {
+    font-size: 1.2rem;
+    color: #FF5A5F;
+    margin-bottom: 10px;
+}
+
+.place-details .amenities ul {
+    list-style: none;
+    padding: 0;
+}
+
+.place-details .amenities ul li {
+    padding: 5px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.reviews {
+    margin-top: 30px;
+}
+
+.reviews h2 {
+    color: #FF5A5F;
+    margin-bottom: 15px;
+}
+
+.review {
+    border-top: 1px solid #eee;
+    padding: 10px 0;
+}
+
+.review h3 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.review p {
+    font-size: 0.95rem;
+    color: #555;
+}
+/* ========================
+   PLACE PAGE: ADD REVIEW
+======================== */
+#add-review {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#add-review h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #FF5A5F;
+}
+
+#add-review label {
+    font-weight: bold #FF5A5F;
+    margin-bottom: 5px;
+    display: block;
+}
+
+#add-review textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    resize: vertical;
+}
+
+#add-review button {
+    width: 100%;
+    padding: 12px;
+    background-color: #FF5A5F;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#add-review button:hover {
+    background-color: #e04e51;
+}
