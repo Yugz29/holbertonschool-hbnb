@@ -2,6 +2,8 @@ from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import request, jsonify
+from flask_jwt_extended import decode_token
 
 
 api = Namespace('auth', description='Authentication operations')
@@ -32,8 +34,18 @@ class Login(Resource):
         additional_claims={"is_admin": user.is_admin}  # extra info here
         )
         
-        # Step 4: Return the JWT token to the client
-        return {'access_token': access_token}, 200
+        from flask import make_response
+        # Step 4: Return the JWT token in a secure HttpOnly cookie
+        response = make_response({'message': 'Login successful'}, 200)
+        response.set_cookie(
+            'token',
+            access_token,
+            httponly=True,    # JS ne peut pas lire le cookie
+            samesite='Lax',   # protège contre certaines attaques CSRF
+            path='/',         # disponible sur toutes les routes
+            max_age=3600      # durée de validité en secondes (1h)
+        )
+        return response
     
 @api.route('/protected')
 class ProtectedResource(Resource):
@@ -47,3 +59,16 @@ class ProtectedResource(Resource):
          # addtional claims = get_jwt()
          #additional claims["is_admin"] -> True or False
          return {'message': f'Hello, user {current_user}'}, 200
+
+@api.route('/check')
+class AuthCheck(Resource):
+    def get(self):
+        """Check if the user is authenticated based on the JWT token cookie"""
+        token = request.cookies.get('token')
+        if not token:
+            return jsonify({"authenticated": False})
+        try:
+            decode_token(token)  # Vérifie la validité du JWT
+            return jsonify({"authenticated": True})
+        except Exception:
+            return jsonify({"authenticated": False})
