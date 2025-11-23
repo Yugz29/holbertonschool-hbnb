@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // POST request
 async function submitReview(token, placeId, reviewText) {
-    return fetch('http://localhost:5001/api/v1/places/' + placeId + '/reviews', {
+    return fetch('http://127.0.0.1:5000/api/v1/places/' + placeId + '/reviews', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
