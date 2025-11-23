@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (response.ok) {
         const data = await response.json();
-        document.cookie = `token=${data.access_token}; max-age=86400; path=/`;
+        document.cookie = `token=${data.access_token}; max-age=86400; path=/; SameSite=Lax`;
         window.location.href = "/index";
       } else {
         const errorData = await response.json();

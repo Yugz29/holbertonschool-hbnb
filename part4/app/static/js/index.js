@@ -26,7 +26,7 @@ function checkAuthentication() {
 
 /* --- FETCH PLACES --- */
 async function fetchPlaces(token) {
-  const result = await fetch('/api/v1/places', {
+  const result = await fetch('http://127.0.0.1:5000/api/v1/places/', {
     headers: {
       "Authorization": `Bearer ${token}`
     }
@@ -46,7 +46,7 @@ function displayPlaces(data) {
   const list = document.getElementById('places-list');
   list.innerHTML = '';
 
-  for (const place of data) {
+  for (const place of data) {  // keep same but ensure the function receives the correct array
     const div = document.createElement('div');
     div.classList.add('place-card');
     div.dataset.price = place.price;

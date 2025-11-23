@@ -34,13 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
 
             const reviewText = document.getElementById('review-text').value.trim();
-            const rating = parseInt(document.getElementById('review-rating').value);
+            const rating = Number.parseInt(document.getElementById('review-rating').value);
 
             if (!reviewText) {
                 alert('Review text cannot be empty.');
                 return;
             }
-            if (isNaN(rating) || rating < 0 || rating > 5) {
+            if (Number.isNaN(rating) || rating < 0 || rating > 5) {
                 alert('Rating must be between 0 and 5.');
                 return;
             }
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const response = await fetch(`/api/v1/reviews/places/${encodeURIComponent(placeId)}/reviews`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${encodeURIComponent(placeId)}/reviews`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ async function fetchPlaceDetails(placeId, token) {
 
     try {
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-        const response = await fetch(`/api/v1/places/${encodeURIComponent(placeId)}`, {
+        const response = await fetch(`http://127.0.0.1:5000/api/v1/places/${encodeURIComponent(placeId)}`, {
             method: 'GET',
             headers,
             credentials: 'include'

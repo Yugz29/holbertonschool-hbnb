@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!token) return false;
 
       try {
-          const res = await fetch('/api/v1/auth/check', {
+          const res = await fetch('http://127.0.0.1:5000/api/v1/auth/check', {
               method: 'GET',
               credentials: 'include',
               headers: {
@@ -62,9 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Fetch place name dynamically
   try {
-      const placeResponse = await fetch('http://127.0.0.1:5000/api/v1/places/' + placeId, {
-          credentials: 'include'
-      });
+      const placeResponse = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`);
       if (placeResponse.ok) {
           const place = await placeResponse.json();
           document.getElementById('place-name').textContent = place.name;
@@ -101,8 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // POST request
   async function submitReview(token, placeId, reviewText, rating) {
-    return fetch(`/api/v1/reviews/places/${encodeURIComponent(placeId)}/reviews`, {
-        credentials: 'include',
+    return fetch(`http://127.0.0.1:5000/api/v1/reviews/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -110,7 +107,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
         body: JSON.stringify({
             text: reviewText,
-            rating: rating
+            rating: rating,
+            place_id: placeId
         })
     });
   }
