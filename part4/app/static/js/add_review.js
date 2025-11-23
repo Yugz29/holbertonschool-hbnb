@@ -11,11 +11,7 @@ function getCookie(name) {
 }
 
 function checkAuthentication() {
-  const token = getCookie('token');
-  if (!token) {
-    window.location.href = 'index.html';
-  }
-  return token;
+  return getCookie('token') || null;
 }
 
 // place-id
@@ -25,23 +21,88 @@ function getPlaceIdFromURL() {
 }
 
 // DOMContentLoaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('review-form');
-  const token = checkAuthentication();
+  const message = document.getElementById('login-message');
   const placeId = getPlaceIdFromURL();
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const reviewText = document.getElementById('review-text').value;
+  // Function to check authentication with backend
+  async function isAuthenticated() {
+      const token = getCookie('token');
+      if (!token) return false;
 
-    const response = await submitReview(token, placeId, reviewText);
-    handleResponse(response, form);
-  });
-});
+      try {
+          const res = await fetch('/api/v1/auth/check', {
+              method: 'GET',
+              credentials: 'include',
+              headers: {
+                  'Authorization': `Bearer ${token}`
+              }
+          });
+          if (res.ok) {
+              const data = await res.json();
+              return data.authenticated === true;
+          }
+      } catch (err) {
+          console.error(err);
+      }
+      return false;
+  }
 
-// POST request
-async function submitReview(token, placeId, reviewText) {
-    return fetch('http://127.0.0.1:5000/api/v1/places/' + placeId + '/reviews', {
+  const loggedIn = await isAuthenticated();
+
+  if (!loggedIn) {
+      if (form) form.style.display = 'none';
+      if (message) message.style.display = 'block';
+      return;
+  }
+
+  if (form) form.style.display = 'block';
+  if (message) message.style.display = 'none';
+
+  // Fetch place name dynamically
+  try {
+      const placeResponse = await fetch('http://127.0.0.1:5000/api/v1/places/' + placeId, {
+          credentials: 'include'
+      });
+      if (placeResponse.ok) {
+          const place = await placeResponse.json();
+          document.getElementById('place-name').textContent = place.name;
+      } else {
+          document.getElementById('place-name').textContent = 'Unknown Place';
+      }
+  } catch (error) {
+      console.error('Error fetching place:', error);
+      document.getElementById('place-name').textContent = 'Unknown Place';
+  }
+
+  // Only attach submit fetch if authenticated
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const reviewText = document.getElementById('review-text').value.trim();
+      let rating = parseInt(document.getElementById('rating').value);
+      if (isNaN(rating) || rating < 0 || rating > 5) {
+        alert('Rating must be a number between 0 and 5.');
+        return false;
+      }
+
+      try {
+        const token = getCookie('token');
+        const response = await submitReview(token, placeId, reviewText, rating);
+        handleResponse(response, form);
+      } catch (err) {
+        console.error('Error submitting review:', err);
+      }
+      return false;
+    });
+  }
+
+  // POST request
+  async function submitReview(token, placeId, reviewText, rating) {
+    return fetch(`/api/v1/reviews/places/${encodeURIComponent(placeId)}/reviews`, {
+        credentials: 'include',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -49,17 +110,18 @@ async function submitReview(token, placeId, reviewText) {
         },
         body: JSON.stringify({
             text: reviewText,
-            place_id: placeId
+            rating: rating
         })
     });
-}
+  }
 
-// Success / Error
-function handleResponse(response, form) {
+  // Success / Error
+  function handleResponse(response, form) {
     if (response.ok) {
         alert('Review submitted successfully!');
         form.reset();
     } else {
         alert('Failed to submit review');
     }
-}
+  }
+});

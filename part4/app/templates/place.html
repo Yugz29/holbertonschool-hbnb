@@ -29,10 +29,21 @@
         <div id="add-review-container" style="text-align:center; margin-top:30px;">
             <button id="add-review-button" style="display:none;">Add Review</button>
             <div id="review-form-container" style="display:none; margin-top:15px;">
-                <form id="review-form">
-                    <label for="review-text">Review:</label>
-                    <textarea id="review-text" name="review-text" required></textarea>
-                    <button type="submit">Submit</button>
+                <form id="review-form" action="#" onsubmit="return false;">
+                    <label for="review-text">Review:</label><br>
+                    <textarea id="review-text" name="review-text" required></textarea><br><br>
+
+                    <label for="review-rating">Rating:</label><br>
+                    <select id="review-rating" name="review-rating" required>
+                        <option value="">--Select rating--</option>
+                        <option value="1">★</option>
+                        <option value="2">★★</option>
+                        <option value="3">★★★</option>
+                        <option value="4">★★★★</option>
+                        <option value="5">★★★★★</option>
+                    </select><br><br>
+
+                    <button type="submit">Submit Review</button>
                 </form>
             </div>
         </div>

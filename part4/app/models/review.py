@@ -16,12 +16,13 @@ class Review(BaseModel, db.Model):
     place = db.relationship('Place', back_populates='reviews')
     
     def to_dict(self):
-        """Return a dictionary representation"""
-        base_dict = super().to_dict()
-        base_dict.update({
+        """Return a dictionary representation without recursion"""
+        return {
+            "id": self.id,
             "text": self.text,
             "rating": self.rating,
-            "place": self.place.to_dict() if self.place else self.place_id,
-            "user": self.user.to_dict() if self.user else self.user_id
-        })
-        return base_dict
+            "place_id": self.place_id,
+            "user_name": self.user.first_name if self.user else "Anonymous",
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat()
+        }

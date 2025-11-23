@@ -20,31 +20,39 @@ class Login(Resource):
     def post(self):
         """Authenticate user and return a JWT token"""
         credentials = api.payload  # Get the email and password from the request payload
-        
+
         # Step 1: Retrieve the user based on the provided email
         user = facade.get_user_by_email(credentials['email'])
-        
+
         # Step 2: Check if the user exists and the password is correct
         if not user or not user.verify_password(credentials['password']):
             return {'error': 'Invalid credentials'}, 401
 
-        # Step 3: Create a JWT token with the user's id and is_admin flag
-        access_token = create_access_token(
-        identity=str(user.id),   # only user ID goes here
-        additional_claims={"is_admin": user.is_admin}  # extra info here
-        )
-        
+        # Verify that user.id is valid
+        if not getattr(user, 'id', None):
+            return {'error': 'User ID is invalid'}, 500
+
+        # Step 3: Create a JWT token with only the user id as identity
+        access_token = create_access_token(identity=user.id)
+        print(access_token)
+
+        if not access_token:
+            return {'error': 'Failed to generate JWT'}, 500
+
         from flask import make_response
-        # Step 4: Return the JWT token in a secure HttpOnly cookie
+        # Step 4: Return the JWT token in a secure cookie accessible by JS
         response = make_response({'message': 'Login successful'}, 200)
         response.set_cookie(
             'token',
             access_token,
-            httponly=True,    # JS ne peut pas lire le cookie
+            httponly=False,    # JS peut lire le cookie
             samesite='Lax',   # protège contre certaines attaques CSRF
             path='/',         # disponible sur toutes les routes
             max_age=3600      # durée de validité en secondes (1h)
         )
+
+        print("Login successful: user.id =", user.id, "access_token =", access_token)
+
         return response
     
 @api.route('/protected')

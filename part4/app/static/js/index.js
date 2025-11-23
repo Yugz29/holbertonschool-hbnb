@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     checkAuthentication();
-  });
+});
 
+/* --- UTILITAIRE : lire un cookie --- */
 function getCookie(name) {
   const cookies = document.cookie.split(';').map(c => c.trim());
   const cookie = cookies.find(c => c.startsWith(name + '='));
@@ -9,13 +10,10 @@ function getCookie(name) {
   return cookie.split('=')[1];
 }
 
+/* --- VERIFIER AUTH --- */
 function checkAuthentication() {
   const token = getCookie('token');
   const loginLink = document.getElementById('login-link');
-
-  if (!loginLink) {
-    console.warn('login-lin not found in DOM');
-  }
 
   if (!token) {
     if (loginLink) loginLink.style.display = 'block';
@@ -23,12 +21,12 @@ function checkAuthentication() {
   }
 
   if (loginLink) loginLink.style.display = 'none';
-
   fetchPlaces(token);
 }
 
+/* --- FETCH PLACES --- */
 async function fetchPlaces(token) {
-  const result = await fetch('http://127.0.0.1:5000/api/v1/places', {
+  const result = await fetch('/api/v1/places', {
     headers: {
       "Authorization": `Bearer ${token}`
     }
@@ -43,6 +41,7 @@ async function fetchPlaces(token) {
   enableFiltering();
 }
 
+/* --- AFFICHE LES PLACES --- */
 function displayPlaces(data) {
   const list = document.getElementById('places-list');
   list.innerHTML = '';
@@ -57,9 +56,10 @@ function displayPlaces(data) {
       <p>Prix: ${place.price}€ / night</p>
       <a href="/place?id=${place.id}" class="details-button">View details</a>`;
     list.appendChild(div);
-  };
+  }
 }
 
+/* --- FILTERING --- */
 function enableFiltering() {
   const filter = document.getElementById('price-filter');
 
@@ -73,3 +73,10 @@ function enableFiltering() {
     }
   });
 }
+
+/* --- LOGOUT --- */
+document.getElementById('logout-btn')?.addEventListener('click', async () => {
+  document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+  await fetch('/api/v1/auth/logout', { method: 'POST' });
+  window.location.href = '/login';
+});

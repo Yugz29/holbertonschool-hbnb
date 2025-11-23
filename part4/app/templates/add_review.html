@@ -21,10 +21,11 @@
     </header>
     <main>
         <section class="add-review">
-            <h2>Reviewing Lovely Loft</h2>
-            <form id="review-form" class="form">
-                <label for="review">Your Review:</label>
-                <textarea id="review" name="review" required></textarea>
+            <h2>Reviewing <span id="place-name"></span></h2>
+            <p id="login-message" style="display:none;">Connectez-vous pour laisser un commentaire.</p>
+            <form id="review-form" class="form" action="#" onsubmit="return false;">
+                <label for="review-text">Your Review:</label>
+                <textarea id="review-text" name="review" required></textarea>
                 <label for="rating">Rating:</label>
                 <select id="rating" name="rating" required>
                     <option value="1">1 ★</option>
