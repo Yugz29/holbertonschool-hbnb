@@ -40,8 +40,11 @@ class Login(Resource):
             return {'error': 'Failed to generate JWT'}, 500
 
         from flask import make_response
-        # Step 4: Return the JWT token in a secure cookie accessible by JS
-        response = make_response({'message': 'Login successful'}, 200)
+        # Step 4: Return the JWT token in a secure cookie accessible by JS and in the JSON response
+        response = make_response({
+            'message': 'Login successful',
+            'access_token': access_token
+        }, 200)
         response.set_cookie(
             'token',
             access_token,

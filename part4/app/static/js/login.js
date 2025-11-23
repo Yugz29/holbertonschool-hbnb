@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.ok) {
         const data = await response.json();
         document.cookie = `token=${data.access_token}; max-age=86400; path=/; SameSite=Lax`;
+        console.log('✅ JWT stored in cookie:', data.access_token);
         window.location.href = "/index";
       } else {
         const errorData = await response.json();

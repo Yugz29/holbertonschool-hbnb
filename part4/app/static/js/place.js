@@ -57,14 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${encodeURIComponent(placeId)}/reviews`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ text: reviewText, rating })
+                    body: JSON.stringify({
+                        text: reviewText,
+                        rating: Number.parseInt(rating, 10),
+                        place_id: String(placeId)
+                    })
                 });
 
                 if (!response.ok) throw new Error('Failed to submit review');

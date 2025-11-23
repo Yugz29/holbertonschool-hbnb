@@ -29,7 +29,7 @@ class ReviewList(Resource):
         rating = data_review.get('rating')
         place_id = data_review.get('place_id')
 
-        if not text or not isinstance(text, str):
+        if not text or not isinstance(text, str) or text.strip() == "":
             return {'error': 'Text is required'}, 400
         if not isinstance(rating, int) or not (1 <= rating <= 5):
             return {'error': 'Rating must be between 1 and 5'}, 400
@@ -41,10 +41,10 @@ class ReviewList(Resource):
             return {'error': 'Place not found'}, 404
 
         if place.owner_id == current_user_id:
-            return {'error': 'You cannot review your own place'}, 400
+            return {'error': 'You cannot review your own place'}, 403
 
         if facade.user_has_reviewed_place(current_user_id, place.id):
-            return {'error': 'You have already reviewed this place'}, 400
+            return {'error': 'You have already reviewed this place'}, 409
 
         new_review = facade.create_review({
             'text': text,
@@ -161,7 +161,8 @@ class PlaceReviewList(Resource):
     def get(self, place_id):
         place = facade.get_place(place_id)
         if not place:
-            return {'error': 'Place not found'}, 404
+            # Always return a list, even if place not found
+            return [], 200
 
         place_reviews = facade.get_reviews_by_place(place_id)
         result = []

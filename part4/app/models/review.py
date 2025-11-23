@@ -22,7 +22,8 @@ class Review(BaseModel, db.Model):
             "text": self.text,
             "rating": self.rating,
             "place_id": self.place_id,
-            "user_name": self.user.first_name if self.user else "Anonymous",
+            "user_id": self.user_id,
+            "user_name": f"{self.user.first_name} {self.user.last_name}" if self.user else "Anonymous",
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat()
         }

@@ -4,8 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* --- UTILITAIRE : lire un cookie --- */
 function getCookie(name) {
+  console.log('🔍 Tous les cookies:', document.cookie);
   const cookies = document.cookie.split(';').map(c => c.trim());
+  console.log('🍪 Cookies parsés:', cookies);
   const cookie = cookies.find(c => c.startsWith(name + '='));
+  console.log(`🎯 Cookie "${name}" trouvé:`, cookie);
   if (!cookie) return null;
   return cookie.split('=')[1];
 }
@@ -13,19 +16,23 @@ function getCookie(name) {
 /* --- VERIFIER AUTH --- */
 function checkAuthentication() {
   const token = getCookie('token');
+  console.log('🔐 Token récupéré:', token);
   const loginLink = document.getElementById('login-link');
 
   if (!token) {
+    console.warn('⚠️ Aucun token trouvé');
     if (loginLink) loginLink.style.display = 'block';
     return;
   }
 
   if (loginLink) loginLink.style.display = 'none';
+  // Only call fetchPlaces if token exists
   fetchPlaces(token);
 }
 
 /* --- FETCH PLACES --- */
 async function fetchPlaces(token) {
+  if (!token) return;
   const result = await fetch('http://127.0.0.1:5000/api/v1/places/', {
     headers: {
       "Authorization": `Bearer ${token}`
