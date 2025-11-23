@@ -56,14 +56,13 @@ class ReviewList(Resource):
         if not new_review:
             return {'error': 'Could not create review'}, 400
 
-        user = facade.get_user(current_user_id)
-        user_name = f"{user.first_name} {user.last_name}" if user else "Anonymous"
+        user_name = f"{new_review.user.first_name} {new_review.user.last_name}" if new_review.user else "Anonymous"
 
         return {
             'id': new_review.id,
             'text': new_review.text,
             'rating': new_review.rating,
-            'user_id': current_user_id,
+            'user_id': new_review.user_id,
             'user_name': user_name,
             'place_id': new_review.place_id
         }, 201

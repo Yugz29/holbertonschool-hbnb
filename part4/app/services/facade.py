@@ -164,12 +164,7 @@ class HBnBFacade:
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        all_reviews = self.get_all_reviews()
-        matching_reviews = []
-        for review in all_reviews:
-            if review.place_id == place_id:
-                matching_reviews.append(review)
-        return matching_reviews
+        return [r for r in self.review_repo.get_all() if r.place_id == place_id]
 
     def update_review(self, review_id, review_data):
         review = self.get_review(review_id)
@@ -209,3 +204,8 @@ class HBnBFacade:
             return None
         self.review_repo.delete(review_id)
         return review
+
+    def user_has_reviewed_place(self, user_id, place_id):
+        """Return True if the user has already reviewed the given place"""
+        reviews = self.review_repo.get_all()
+        return any(r.user_id == user_id and r.place_id == place_id for r in reviews)
