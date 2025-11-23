@@ -3,11 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 function getCookie(name) {
-  const pair = document.cookie
-  .split('; ')
-  .find(row => row.startsWith(name + '='));
-if (!pair) return undefined;
-return pair.split('=')[1];
+  const cookies = document.cookie.split(';').map(c => c.trim());
+  const cookie = cookies.find(c => c.startsWith(name + '='));
+  if (!cookie) return null;
+  return cookie.split('=')[1];
 }
 
 function checkAuthentication() {
