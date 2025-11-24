@@ -4,6 +4,7 @@ from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, jsonify
 from flask_jwt_extended import decode_token
+from datetime import timedelta
 
 
 api = Namespace('auth', description='Authentication operations')
@@ -33,7 +34,7 @@ class Login(Resource):
             return {'error': 'User ID is invalid'}, 500
 
         # Step 3: Create a JWT token with only the user id as identity
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
         print(access_token)
 
         if not access_token:

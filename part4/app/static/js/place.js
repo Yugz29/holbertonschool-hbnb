@@ -174,7 +174,9 @@ function displayPlaceDetails(place) {
         for (const review of reviews) {
             const reviewDiv = document.createElement('div');
             reviewDiv.className = 'review';
-            reviewDiv.appendChild(createText('h3', `By: ${review.user_name || 'Anonymous'}`));
+
+            const userName = review.user_name || 'Anonymous';
+            reviewDiv.appendChild(createText('h3', `By: ${userName}`));
             reviewDiv.appendChild(createText('p', review.text || 'No review.'));
             const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
             reviewDiv.appendChild(createText('p', `Rating: ${stars}`));

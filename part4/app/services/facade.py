@@ -1,3 +1,4 @@
+from sqlalchemy.orm import joinedload
 from app.persistence.repositories.user_repository import UserRepository
 from app.persistence.repository import SQLAlchemyRepository
 from app.models.user import User
@@ -164,7 +165,12 @@ class HBnBFacade:
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        return [r for r in self.review_repo.get_all() if r.place_id == place_id]
+        return (
+            Review.query
+            .filter_by(place_id=place_id)
+            .options(joinedload(Review.user))
+            .all()
+        )
 
     def update_review(self, review_id, review_data):
         review = self.get_review(review_id)

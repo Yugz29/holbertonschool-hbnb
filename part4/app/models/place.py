@@ -19,7 +19,7 @@ class Place(BaseModel, db.Model):
     
     """Relationships"""
     owner = db.relationship('User', back_populates='places')
-    reviews = db.relationship('Review', back_populates='place', lazy=True)
+    reviews = db.relationship('Review', back_populates='place', lazy='joined')
     amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery', back_populates='places')
 
     def to_dict(self):
@@ -37,6 +37,7 @@ class Place(BaseModel, db.Model):
                     "text": review.text,
                     "rating": review.rating,
                     "user_id": review.user_id,
+                    "user_name": f"{review.user.first_name} {review.user.last_name}" if review.user else "Anonymous",
                     "created_at": review.created_at.isoformat() if review.created_at else None,
                 } for review in self.reviews
             ],

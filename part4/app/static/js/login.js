@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (response.ok) {
         const data = await response.json();
-        document.cookie = `token=${data.access_token}; max-age=86400; path=/; SameSite=Lax`;
+        document.cookie = `token=${data.access_token}; path=/;`;
         console.log('✅ JWT stored in cookie:', data.access_token);
         window.location.href = "/index";
       } else {
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.textContent = errorData.message || 'Login failed. Please try again.';
       }
     } catch (err) {
-      errorMessage.textContent = 'An unexpected error occurred. Please try again.';
+        errorMessage.textContent = 'An unexpected error occurred. Please try again.';
     }
   });
 });

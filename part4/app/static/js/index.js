@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuthentication();
+  const token = getCookie('token');
+  const loginLink = document.getElementById('login-link');
+
+  if (!token) {
+    if (loginLink) loginLink.style.display = 'block';
+  } else {
+    if (loginLink) loginLink.style.display = 'none';
+  }
+  fetchPlaces(token);
 });
 
 /* --- UTILITAIRE : lire un cookie --- */
@@ -13,30 +21,12 @@ function getCookie(name) {
   return cookie.split('=')[1];
 }
 
-/* --- VERIFIER AUTH --- */
-function checkAuthentication() {
-  const token = getCookie('token');
-  console.log('🔐 Token récupéré:', token);
-  const loginLink = document.getElementById('login-link');
-
-  if (!token) {
-    console.warn('⚠️ Aucun token trouvé');
-    if (loginLink) loginLink.style.display = 'block';
-    return;
-  }
-
-  if (loginLink) loginLink.style.display = 'none';
-  // Only call fetchPlaces if token exists
-  fetchPlaces(token);
-}
 
 /* --- FETCH PLACES --- */
 async function fetchPlaces(token) {
-  if (!token) return;
+  const headers = token ? { "Authorization": `Bearer ${token}` } : {};
   const result = await fetch('http://127.0.0.1:5000/api/v1/places/', {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
+    headers
   });
 
   if (!result.ok) {

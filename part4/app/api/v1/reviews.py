@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.extensions import db
 
 api = Namespace('reviews', description='Review operations')
 
@@ -23,6 +24,9 @@ class ReviewList(Resource):
             current_user_id = current_user.get('id')
         else:
             current_user_id = current_user
+
+        print(f"🔍 DEBUG - current_user_id: {current_user_id}")
+        print(f"🔍 DEBUG - current_user type: {type(current_user)}")
 
         data_review = api.payload or {}
         text = data_review.get('text')
@@ -55,8 +59,22 @@ class ReviewList(Resource):
 
         if not new_review:
             return {'error': 'Could not create review'}, 400
+        
+        print(f"🔍 DEBUG - new_review.user_id: {new_review.user_id}")
+        
+        # Récupère l'utilisateur via facade
+        user = facade.get_user(current_user_id)
+        print(f"🔍 DEBUG - user from facade: {user}")
 
-        user_name = f"{new_review.user.first_name} {new_review.user.last_name}" if new_review.user else "Anonymous"
+        if user:
+            print(f"🔍 DEBUG - user.first_name: '{user.first_name}'")
+            print(f"🔍 DEBUG - user.last_name: '{user.last_name}'")
+            user_name = f"{user.first_name} {user.last_name}"
+        else:
+            print(f"⚠️ WARNING - User not found for ID: {current_user_id}")
+            user_name = "Anonymous"
+
+        print(f"🔍 DEBUG - Final user_name: '{user_name}'")
 
         return {
             'id': new_review.id,
@@ -74,13 +92,12 @@ class ReviewList(Resource):
         result = []
         for review in reviews:
             user = facade.get_user(review.user_id)
-            user_id = review.user_id
             user_name = f"{user.first_name} {user.last_name}" if user else "Anonymous"
             result.append({
                 'id': review.id,
                 'text': review.text,
                 'rating': review.rating,
-                'user_id': user_id,
+                'user_id': review.user_id,
                 'user_name': user_name,
                 'place_id': review.place_id
             })
@@ -94,14 +111,15 @@ class ReviewResource(Resource):
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
+        
         user = facade.get_user(review.user_id)
-        user_id = review.user_id
         user_name = f"{user.first_name} {user.last_name}" if user else "Anonymous"
+        
         return {
             'id': review.id,
             'text': review.text,
             'rating': review.rating,
-            'user_id': user_id,
+            'user_id': review.user_id,
             'user_name': user_name,
             'place_id': review.place_id
         }, 200
@@ -160,20 +178,18 @@ class PlaceReviewList(Resource):
     def get(self, place_id):
         place = facade.get_place(place_id)
         if not place:
-            # Always return a list, even if place not found
             return [], 200
 
         place_reviews = facade.get_reviews_by_place(place_id)
         result = []
         for review in place_reviews:
             user = facade.get_user(review.user_id)
-            user_id = review.user_id
             user_name = f"{user.first_name} {user.last_name}" if user else "Anonymous"
             result.append({
                 'id': review.id,
                 'text': review.text,
                 'rating': review.rating,
-                'user_id': user_id,
+                'user_id': review.user_id,
                 'user_name': user_name,
                 'place_id': review.place_id
             })
