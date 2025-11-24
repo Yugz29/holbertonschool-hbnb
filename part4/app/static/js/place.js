@@ -12,9 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = getCookie('token');
 
     const addReviewBtn = document.getElementById('add-review-button');
-    const reviewForm = document.getElementById('review-form-container');
-    if (reviewForm) reviewForm.style.display = 'none';
-    const form = document.getElementById('review-form');
 
     // Show/hide Add Review button, login link and logout button
     if (token) {
@@ -32,64 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/login';
     });
 
-    // Toggle review form
-    if (addReviewBtn && reviewForm) {
+    // Redirect to add_review.html with place_id query parameter
+    if (addReviewBtn) {
         addReviewBtn.addEventListener('click', () => {
-            reviewForm.style.display = reviewForm.style.display === 'none' ? 'block' : 'none';
-        });
-    }
-
-    // Handle review form submission
-    if (form && token) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const reviewText = document.getElementById('review-text').value.trim();
-            const rating = Number.parseInt(document.getElementById('review-rating').value);
-
-            if (!reviewText) {
-                alert('Review text cannot be empty.');
-                return;
-            }
-            if (Number.isNaN(rating) || rating < 0 || rating > 5) {
-                alert('Rating must be between 0 and 5.');
-                return;
-            }
-
-            // Log values and check for missing placeId/token
-            console.log('Submitting review for placeId:', placeId, 'with token:', token);
-            if (!placeId) {
-                alert('Place ID is missing. Cannot submit review.');
-                return;
-            }
-            if (!token) {
-                alert('You are not logged in. Cannot submit review.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`http://127.0.0.1:5000/api/v1/reviews`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        text: reviewText,
-                        rating: Number.parseInt(rating, 10),
-                        place_id: String(placeId)
-                    })
-                });
-
-                if (!response.ok) throw new Error('Failed to submit review');
-
-                form.reset();
-                fetchPlaceDetails(placeId); // refresh details and reviews
-            } catch (err) {
-                console.error('Error submitting review:', err);
-                alert(err.message);
-            }
+            window.location.href = `/add_review?place_id=${encodeURIComponent(placeId)}`;
         });
     }
 
