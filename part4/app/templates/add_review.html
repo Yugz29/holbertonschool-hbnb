@@ -4,29 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Review</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
         <div class="container header-container">
             <div class="header-logo">
-                <a href="index.html">
-                    <img src="../images/logo.png" alt="HBnB Logo" class="logo">
+                <a href="/index">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HBnB Logo" class="logo">
                 </a>
             </div>
             <nav class="header-nav">
-                <a href="login.html" class="login-button">Login</a>
-                <button id="logout-btn" style="display:none;">Log Out</button>
+                <a href="/login" class="login-button auth-btn">Login</a>
+                <button id="logout-btn" class="login-button auth-btn" style="display:none;">Log Out</button>
             </nav>
         </div>
     </header>
     <main>
-        <section class="add-review">
+        <section id="add-review" class="add-review">
             <h2>Reviewing <span id="place-name"></span></h2>
             <p id="login-message" style="display:none;">Connectez-vous pour laisser un commentaire.</p>
             <form id="review-form" class="form" action="#" onsubmit="return false;">
-                <label for="review-text">Your Review:</label>
-                <textarea id="review-text" name="review" required></textarea>
                 <label for="rating">Rating:</label>
                 <select id="rating" name="rating" required>
                     <option value="1">1 ★</option>
@@ -35,8 +33,12 @@
                     <option value="4">4 ★★★★</option>
                     <option value="5">5 ★★★★★</option>
                 </select>
+                <label for="review-text">Your Review:</label>
+                <textarea id="review-text" name="review" required></textarea>
                 <button type="submit">Submit Review</button>
             </form>
+            <!-- Section pour afficher les reviews -->
+            <div id="reviews-list"></div>
         </section>
     </main>
     <footer class="footer">
@@ -44,6 +46,6 @@
             <p>© 2025 HBnB. All rights reserved.</p>
         </div>
     </footer>
-    <script src="../js/add_review.js"></script>
+    <script src="{{ url_for('static', filename='js/add_review.js') }}"></script>
 </body>
 </html>
