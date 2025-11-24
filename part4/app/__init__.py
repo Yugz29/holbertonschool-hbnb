@@ -42,4 +42,10 @@ def create_app(config_class=config.DevelopmentConfig):
     def place_page():
         return render_template("place.html")
 
+    @app.route("/add_review")
+    def add_review_page():
+        place_id = request.args.get("place_id")
+        placeName = None
+        return render_template("add_review.html", place_id=place_id, placeName=placeName)
+    
     return app
