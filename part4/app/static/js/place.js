@@ -6,20 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const loginLink = document.querySelector('.login-button');
-    const logoutBtn = document.getElementById('logout-btn'); // use existing button in HTML
+    const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) logoutBtn.style.display = 'none';
 
     const token = getCookie('token');
-
     const addReviewBtn = document.getElementById('add-review-button');
 
-    // Show/hide Add Review button, login link and logout button
     if (token) {
-        if (addReviewBtn) addReviewBtn.style.display = 'inline-block';
         if (loginLink) loginLink.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-flex';
     } else {
-        if (addReviewBtn) addReviewBtn.style.display = 'none';
         if (loginLink) loginLink.style.display = 'inline-block';
         if (logoutBtn) logoutBtn.style.display = 'none';
     }
@@ -29,14 +25,21 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/login';
     });
 
-    // Redirect to add_review.html with place_id query parameter
     if (addReviewBtn) {
+        addReviewBtn.style.display = 'inline-block'; // Toujours visible
+        
         addReviewBtn.addEventListener('click', () => {
+            if (!token) {
+                alert('You must be logged in to add a review.');
+                window.location.href = '/login';
+                return;
+        }
+            
             window.location.href = `/add_review?place_id=${encodeURIComponent(placeId)}`;
         });
     }
 
-    // Load place details with token for authentication
+    // Charger les détails du lieu
     fetchPlaceDetails(placeId, token);
 });
 
@@ -71,40 +74,53 @@ async function fetchPlaceDetails(placeId, token) {
         const data = await response.json();
         const place = data.place ?? data;
         displayPlaceDetails(place);
-    } catch (err) {
-        console.error('Error fetching place details:', err);
-        const container = document.getElementById('place-details');
-        if (container) {
-            container.innerHTML = '<p>Error loading place details. Please try again later.</p>';
+    } catch (error) {
+        console.error('Error fetching place details:', error);
+        const placeInfoContainer = document.querySelector('.place-info');
+        if (placeInfoContainer) {
+            placeInfoContainer.innerHTML = '<p>Unable to load place details. Please try again later.</p>';
         }
     }
 }
 
-function createText(tag, text, className) {
+function createText(tag, text, className = '') {
     const element = document.createElement(tag);
-    if (className) element.className = className;
     element.textContent = text;
+    if (className) element.className = className;
     return element;
 }
 
 function displayPlaceDetails(place) {
-    const container = document.getElementById('place-details');
-    if (!container) {
-        console.error('Place details container not found');
+    const placeInfoContainer = document.querySelector('.place-info');
+    if (!placeInfoContainer) {
+        console.error('Place info container not found');
         return;
     }
-    container.innerHTML = '';
+    placeInfoContainer.innerHTML = '';
 
+    // Header du lieu
     const header = document.createElement('div');
     header.className = 'place-header';
     header.appendChild(createText('h1', place.title || 'Unnamed Place'));
     header.appendChild(createText('p', `Price: ${place.price ?? '—'}€ / night`, 'price'));
-    container.appendChild(header);
+    placeInfoContainer.appendChild(header);
 
+    // Description
     if (place.description) {
-        container.appendChild(createText('p', place.description, 'description'));
+        placeInfoContainer.appendChild(createText('p', place.description, 'description'));
     }
 
+    // Host info
+    if (place.host_name) {
+        placeInfoContainer.appendChild(createText('p', `Host: ${place.host_name}`, 'host'));
+    }
+
+    // Location
+    if (place.latitude && place.longitude) {
+        placeInfoContainer.appendChild(createText('p', `Location: ${place.latitude}, ${place.longitude}`, 'location'));
+    }
+
+    // Amenities
     if (Array.isArray(place.amenities) && place.amenities.length > 0) {
         const amenitiesSection = document.createElement('div');
         amenitiesSection.className = 'amenities';
@@ -114,29 +130,37 @@ function displayPlaceDetails(place) {
             ul.appendChild(createText('li', amenity.name || amenity));
         }
         amenitiesSection.appendChild(ul);
-        container.appendChild(amenitiesSection);
+        placeInfoContainer.appendChild(amenitiesSection);
     }
 
-    const reviewsSection = document.createElement('div');
-    reviewsSection.className = 'reviews';
-    reviewsSection.appendChild(createText('h2', 'Reviews'));
+    // Affiche les reviews
+    displayReviews(place.reviews ?? []);
+}
 
-    const reviews = place.reviews ?? [];
+function displayReviews(reviews) {
+    const reviewsList = document.getElementById('reviews-list');
+    if (!reviewsList) {
+        console.error('Reviews list container not found');
+        return;
+    }
+    reviewsList.innerHTML = '';
+
     if (reviews.length === 0) {
-        reviewsSection.appendChild(createText('p', 'No reviews yet.'));
-    } else {
-        for (const review of reviews) {
-            const reviewDiv = document.createElement('div');
-            reviewDiv.className = 'review';
-
-            const userName = review.user_name || 'Anonymous';
-            reviewDiv.appendChild(createText('h3', `By: ${userName}`));
-            reviewDiv.appendChild(createText('p', review.text || 'No review.'));
-            const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-            reviewDiv.appendChild(createText('p', `Rating: ${stars}`));
-            reviewsSection.appendChild(reviewDiv);
-        }
+        reviewsList.appendChild(createText('p', 'No reviews yet.'));
+        return;
     }
 
-    container.appendChild(reviewsSection);
+    for (const review of reviews) {
+        const reviewDiv = document.createElement('div');
+        reviewDiv.className = 'review';
+
+        const userName = review.user_name || 'Anonymous';
+        reviewDiv.appendChild(createText('h3', `By: ${userName}`));
+        reviewDiv.appendChild(createText('p', review.text || 'No review.'));
+
+        const stars = '★'.repeat(review.rating || 0) + '☆'.repeat(5 - (review.rating || 0));
+        reviewDiv.appendChild(createText('p', `Rating: ${stars}`, 'rating'));
+
+        reviewsList.appendChild(reviewDiv);
+    }
 }

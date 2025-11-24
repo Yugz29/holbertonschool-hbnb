@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchPlaces(token);
 });
 
-/* --- UTILITAIRE : lire un cookie --- */
+/* --- UTILITAIRE --- */
 function getCookie(name) {
   console.log('🔍 Tous les cookies:', document.cookie);
   const cookies = document.cookie.split(';').map(c => c.trim());

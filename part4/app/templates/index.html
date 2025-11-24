@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of Places</title>
+    <title>Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -14,31 +14,37 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HBnB Logo" class="logo">
                 </a>
             </div>
-            <nav class="header-nav"><a id="login-link" href="{{ url_for('login_page') }}" class="login-button auth-btn">Login</a>
+            <nav class="header-nav">
+                <a id="login-link" href="{{ url_for('login_page') }}" class="login-button auth-btn">Login</a>
                 <button id="logout-btn" class="auth-btn" style="display:none;">Log Out</button>
-                
             </nav>
         </div>
     </header>
+    
     <main>
         <h2>Available Places</h2>
+        
         <section id="filter">
-            <label for="price-filter">Max Price:</label>
+            <label for="price-filter">💰 Max Price:</label>
             <select id="price-filter">
-                <option value="All">All</option>
-                <option value="10">10</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
+                <option value="All">All Prices</option>
+                <option value="50">Under $50</option>
+                <option value="100">Under $100</option>
+                <option value="200">Under $200</option>
             </select>
         </section>
+        
         <section id="places-list" class="place-cards-container places-list-index">
+            <!-- Les cards seront injectées ici par JS -->
         </section>
     </main>
+    
     <footer class="footer">
         <div class="container">
             <p>© 2025 HBnB. All rights reserved.</p>
         </div>
     </footer>
+    
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>

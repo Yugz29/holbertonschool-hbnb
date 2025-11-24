@@ -3,41 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - HBnB</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
         <div class="container header-container">
             <div class="header-logo">
-                <a href="index.html">
+                <a href="{{ url_for('index_page') }}">
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HBnB Logo" class="logo">
                 </a>
             </div>
             <nav class="header-nav">
-                <a id="login-link" href="login.html" class="login-button auth-btn">Login</a>
-                <button id="logout-btn" class="auth-btn" style="display:none;">Log Out</button>
+                <a href="{{ url_for('index_page') }}" class="auth-btn">Back to Home</a>
             </nav>
         </div>
     </header>
+    
     <main>
         <form id="login-form">
             <h2>Login</h2>
+            
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
-            
+
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
-            
+
             <button type="submit">Login</button>
-            <p id="error-message"></p>
+            
+            <p id="error-message" style="color: red;"></p>
         </form>
     </main>
+    
     <footer class="footer">
         <div class="container">
             <p>© 2025 HBnB. All rights reserved.</p>
         </div>
     </footer>
+    
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 </body>
 </html>
