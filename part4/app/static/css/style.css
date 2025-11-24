@@ -14,11 +14,10 @@ body {
 }
 
 /* ========================
-   LAYOUT: HEADER & FOOTER
+   HEADER & FOOTER
 ======================== */
 header {
     background-color: #ffffff;
-    color: #fff;
     padding: 1rem;
     border-bottom: 4px solid #FF5A5F;
 }
@@ -37,56 +36,12 @@ nav a,
     margin-left: 1rem;
 }
 
-.footer {
-    background-color: #FF5A5F;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-    font-size: 0.9rem;
-}
-
-.footer a {
-    color: #333;
-    text-decoration: none;
-    margin: 0 5px;
-}
-
-.footer a:hover {
-    text-decoration: underline;
-}
-
-/* Style universel pour Login et Logout */
-header .auth-btn {
-    background-color: #FF5A5F !important; /* rouge Airbnb */
-    color: white !important;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    text-decoration: none !important;
-    display: inline-block;
-    transition: background 0.2s ease, color 0.2s ease;
-    opacity: 1; /* assure visibilité */
-}
-
-header .auth-btn:hover {
-    background-color: #e04e51; /* plus foncé */
-    color: white !important;
-}
-
-/* Facultatif : pour les <a> dans le header */
-header a.auth-btn {
-    line-height: normal; /* assure que le texte est centré */
-}
-
-/* Fix header nav and button sizing */
 header nav.header-nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 1rem;
-    height: auto; /* allow nav to expand with button */
+    height: auto;
 }
 
 header a.auth-btn,
@@ -103,13 +58,47 @@ header button.auth-btn {
     border: none;
     cursor: pointer;
     opacity: 1;
-    box-sizing: border-box; /* ensures padding applies correctly */
+    box-sizing: border-box;
     transition: background 0.2s ease;
+    line-height: normal;
 }
 
 header a.auth-btn:hover,
 header button.auth-btn:hover {
-    background-color: #e04e51;
+    background-color: #e04e51 !important;
+}
+
+/* Style universel pour Login et Logout */
+header .auth-btn {
+    background-color: #FF5A5F !important;
+    color: white !important;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none !important;
+    display: inline-block;
+    transition: background 0.2s ease, color 0.2s ease;
+    opacity: 1;
+}
+
+.footer {
+    background-color: #FF5A5F;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+}
+
+.footer a {
+    color: #333;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.footer a:hover {
+    text-decoration: underline;
 }
 
 /* ========================
@@ -132,6 +121,11 @@ main {
     color: white;
     text-decoration: none;
     margin-top: 10px;
+    transition: background 0.2s ease;
+}
+
+.details-button:hover {
+    background-color: #e04e51;
 }
 
 /* Cards */
@@ -150,7 +144,6 @@ main {
     color: #FF5A5F;
     margin-bottom: 10px;
     font-weight: bold;
-    text-align: center;
     letter-spacing: 0.5px;
 }
 
@@ -171,7 +164,7 @@ main h2 {
     justify-content: space-between;
     min-height: 300px;
     height: 350px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04)
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .places-list-index .place-card {
@@ -215,8 +208,10 @@ main h2 {
 }
 
 /* ========================
-   PAGE: LOGIN
+   PAGES
 ======================== */
+
+/* --- LOGIN PAGE --- */
 #login-form {
     max-width: 400px;
     margin: 50px auto;
@@ -236,7 +231,7 @@ main h2 {
 #login-form label {
     display: block;
     text-align: left;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
 }
 
@@ -258,6 +253,7 @@ main h2 {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
+    transition: background 0.2s ease;
 }
 
 #login-form button:hover {
@@ -271,9 +267,7 @@ main h2 {
     text-align: center;
 }
 
-/* ========================
-   PAGE: PLACE DETAILS
-======================== */
+/* --- PLACE DETAILS PAGE --- */
 .place-details {
     max-width: 800px;
     margin: 20px auto;
@@ -354,50 +348,104 @@ main h2 {
     color: #555;
 }
 
-/* ========================
-   PLACE PAGE: ADD REVIEW
-======================== */
+/* --- ADD REVIEW PAGE --- */
 #add-review {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 25px;
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px 40px;
     background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
 #add-review h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
     color: #FF5A5F;
 }
 
-#add-review label {
-    font-weight: bold #FF5A5F;
-    margin-bottom: 5px;
-    display: block;
+#add-review form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-#add-review textarea {
+/* Spacing between labels and their fields */
+#add-review .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* space between label and field */
+    margin-bottom: 20px; /* extra spacing between groups */
+}
+
+#add-review form label {
+    margin-bottom: 8px; /* space between label and its input */
+    font-weight: bold;
+    color: #333;
+}
+
+#add-review form textarea,
+#add-review form select,
+#add-review form input {
     width: 100%;
-    padding: 10px;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 1rem;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    resize: vertical;
+    box-sizing: border-box;
+    background-color: #fff;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
-#add-review button {
-    width: 100%;
-    padding: 12px;
+#add-review form textarea:focus,
+#add-review form select:focus,
+#add-review form input:focus {
+    border-color: #FF5A5F !important;
+    box-shadow: 0 0 8px rgba(255, 90, 95, 0.3);
+    outline: none;
+}
+
+#add-review form button {
+    align-self: center;
+    padding: 14px 35px;
+    background-color: #FF5A5F !important;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-top: 10px;
+}
+
+#add-review form button:hover {
+    background-color: #e04e51 !important;
+}
+
+#add-review #reviews-list {
+    margin-top: 40px;
+}
+
+/* Add Review button */
+.add-review-btn {
+    padding: 12px 22px;
     background-color: #FF5A5F;
     color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+    transition: background 0.2s ease;
 }
 
-#add-review button:hover {
+.add-review-btn:hover {
     background-color: #e04e51;
+}
+
+/* Space between Rating field and Your Review textarea */
+#add-review #rating {
+    margin-bottom: 20px;
 }
