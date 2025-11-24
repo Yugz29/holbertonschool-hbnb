@@ -52,6 +52,13 @@ class HBnBFacade:
         if not amenity:
             return None
         return amenity
+    
+    def get_amenity_by_name(self, name):
+        amenities = self.amenity_repo.get_all()
+        for amenity in amenities:
+            if amenity.name.lower() == name.lower():
+                return amenity
+        return None
 
     def get_all_amenities(self):
         return self.amenity_repo.get_all()
@@ -79,31 +86,36 @@ class HBnBFacade:
             place_data['owner'] = owner
             del place_data['owner_id']
 
-        amenities_ids = place_data.pop("amenities", [])
+        amenities_data = place_data.pop("amenities", [])
+        
+        # Créer la place d'abord
         place = Place(**place_data)
-        self.place_repo.add(place)
-
-        for aid in amenities_ids:
-            amenity = self.get_amenity(aid)
+        
+        # Récupérer les objets amenity et les assigner
+        amenities_list = []
+        for amenity_name in amenities_data:
+            amenity = self.get_amenity_by_name(amenity_name)
             if amenity:
-                place.add_amenity(amenity)
-
+                amenities_list.append(amenity)
+        
+        # Assigner directement la liste (grâce à la relationship SQLAlchemy)
+        place.amenities = amenities_list
+        
+        # Sauvegarder la place avec ses amenities
+        self.place_repo.add(place)
+        
         return place
 
     def get_place(self, place_id):
         place = self.place_repo.get(place_id)
         if not place:
             return None
-
-        place.owner = self.user_repo.get(place.owner_id)
-        place.amenities = [self.amenity_repo.get(aid) for aid in getattr(place, 'amenity_ids', [])]
+        # Les amenities sont déjà chargées via la relationship
         return place
 
     def get_all_places(self):
         places = self.place_repo.get_all()
-        for place in places:
-            place.owner = self.user_repo.get(place.owner_id)
-            place.amenities = [self.amenity_repo.get(aid) for aid in getattr(place, 'amenity_ids', [])]
+        # Les amenities sont déjà chargées via la relationship
         return places
 
     def update_place(self, place_id, place_data):
@@ -119,13 +131,13 @@ class HBnBFacade:
             del place_data['owner_id']
 
         if 'amenities' in place_data:
-            valid_amenities = []
-            for amenity_id in place_data['amenities']:
-                amenity = self.get_amenity(amenity_id)
+            amenities_list = []
+            for amenity_name in place_data['amenities']:
+                amenity = self.get_amenity_by_name(amenity_name)
                 if not amenity:
-                    raise ValueError(f"Amenity {amenity_id} does not exist")
-                valid_amenities.append(amenity)
-            place_data['amenities'] = valid_amenities
+                    raise ValueError(f"Amenity '{amenity_name}' does not exist")
+                amenities_list.append(amenity)
+            place_data['amenities'] = amenities_list
 
         self.place_repo.update(place_id, place_data)
         return self.get_place(place_id)

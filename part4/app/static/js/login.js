@@ -2,6 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const errorMessage = document.getElementById('error-message');
 
+  const loginLink = document.getElementById('login-link');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  const tokenCookie = document.cookie.split('; ').find(row => row.startsWith('token='));
+
+  if (tokenCookie) {
+      if (loginLink) loginLink.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
+  } else {
+      if (loginLink) loginLink.style.display = 'inline-block';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+  }
+
+  if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+          document.cookie = 'token=; path=/; max-age=0;';
+          window.location.href = '/login';
+      });
+  }
+
   loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     errorMessage.textContent = '';

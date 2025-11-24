@@ -2,6 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const token = getCookie('token');
   const loginLink = document.getElementById('login-link');
 
+  const logoutBtn = document.getElementById('logout-btn');
+
+  if (token) {
+      if (loginLink) loginLink.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
+  } else {
+      if (loginLink) loginLink.style.display = 'block';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+  }
+
   if (!token) {
     if (loginLink) loginLink.style.display = 'block';
   } else {

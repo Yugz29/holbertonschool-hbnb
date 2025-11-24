@@ -5,21 +5,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    const loginLink = document.querySelector('.login-button');
+    const logoutBtn = document.getElementById('logout-btn'); // use existing button in HTML
+    if (logoutBtn) logoutBtn.style.display = 'none';
+
     const token = getCookie('token');
 
     const addReviewBtn = document.getElementById('add-review-button');
-    const loginBtn = document.querySelector('.login-button');
     const reviewForm = document.getElementById('review-form-container');
+    if (reviewForm) reviewForm.style.display = 'none';
     const form = document.getElementById('review-form');
 
-    // Show/hide Add Review button and login link
+    // Show/hide Add Review button, login link and logout button
     if (token) {
         if (addReviewBtn) addReviewBtn.style.display = 'inline-block';
-        if (loginBtn) loginBtn.style.display = 'none';
+        if (loginLink) loginLink.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
     } else {
         if (addReviewBtn) addReviewBtn.style.display = 'none';
-        if (loginBtn) loginBtn.style.display = 'inline-block';
+        if (loginLink) loginLink.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'none';
     }
+
+    logoutBtn?.addEventListener('click', () => {
+        document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
+        window.location.href = '/login';
+    });
 
     // Toggle review form
     if (addReviewBtn && reviewForm) {

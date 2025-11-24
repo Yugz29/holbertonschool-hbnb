@@ -55,6 +55,63 @@ nav a,
     text-decoration: underline;
 }
 
+/* Style universel pour Login et Logout */
+header .auth-btn {
+    background-color: #FF5A5F !important; /* rouge Airbnb */
+    color: white !important;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none !important;
+    display: inline-block;
+    transition: background 0.2s ease, color 0.2s ease;
+    opacity: 1; /* assure visibilité */
+}
+
+header .auth-btn:hover {
+    background-color: #e04e51; /* plus foncé */
+    color: white !important;
+}
+
+/* Facultatif : pour les <a> dans le header */
+header a.auth-btn {
+    line-height: normal; /* assure que le texte est centré */
+}
+
+/* Fix header nav and button sizing */
+header nav.header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    height: auto; /* allow nav to expand with button */
+}
+
+header a.auth-btn,
+header button.auth-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    font-size: 1rem;
+    border-radius: 8px;
+    background-color: #FF5A5F !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    border: none;
+    cursor: pointer;
+    opacity: 1;
+    box-sizing: border-box; /* ensures padding applies correctly */
+    transition: background 0.2s ease;
+}
+
+header a.auth-btn:hover,
+header button.auth-btn:hover {
+    background-color: #e04e51;
+}
+
 /* ========================
    MAIN WRAPPER
 ======================== */
@@ -218,74 +275,6 @@ main h2 {
    PAGE: PLACE DETAILS
 ======================== */
 .place-details {
-    margin: 20px 0;
-}
-
-.place-title {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* ========================
-   PAGE: ADD REVIEW
-======================== */
-.add-review {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 30px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.add-review h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.add-review p {
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.add-review .form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.add-review label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.add-review textarea,
-.add-review select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.add-review button {
-    padding: 10px;
-    background-color: #FF5A5F;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.add-review button:hover {
-    background-color: #e04e51;
-}
-/* ========================
-   PAGE: PLACE DETAILS
-======================== */
-.place-details {
     max-width: 800px;
     margin: 20px auto;
     padding: 20px;
@@ -364,6 +353,7 @@ main h2 {
     font-size: 0.95rem;
     color: #555;
 }
+
 /* ========================
    PLACE PAGE: ADD REVIEW
 ======================== */
