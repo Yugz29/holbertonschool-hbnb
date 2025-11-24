@@ -10,14 +10,11 @@ function getCookie(name) {
   return null;
 }
 
-function checkAuthentication() {
-  return getCookie('token') || null;
-}
-
-// place-id
+// Get place-id from URL
 function getPlaceIdFromURL() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('id');
+    // Essayer 'place_id' puis 'id' pour être flexible
+    return params.get('place_id') || params.get('id');
 }
 
 // DOMContentLoaded
@@ -25,6 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('review-form');
   const message = document.getElementById('login-message');
   const placeId = getPlaceIdFromURL();
+
+  // Vérifier que le placeId existe
+  if (!placeId) {
+      alert('No place ID provided');
+      window.location.href = '/index';
+      return;
+  }
 
   // Function to check authentication with backend
   async function isAuthenticated() {
@@ -51,21 +55,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const loggedIn = await isAuthenticated();
 
+  // Si pas connecté, rediriger vers /index (Flask route)
   if (!loggedIn) {
-      if (form) form.style.display = 'none';
-      if (message) message.style.display = 'block';
+      window.location.href = '/index';
       return;
   }
 
+  // Utilisateur connecté : afficher le formulaire et gérer les boutons
   if (form) form.style.display = 'block';
   if (message) message.style.display = 'none';
+  
+  // Gérer l'affichage des boutons login/logout
+  const loginBtn = document.querySelector('.login-button');
+  const logoutBtn = document.getElementById('logout-btn');
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (logoutBtn) {
+      logoutBtn.style.display = 'inline-block';
+      logoutBtn.addEventListener('click', () => {
+          document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          window.location.href = '/index';
+      });
+  }
 
   // Fetch place name dynamically
   try {
       const placeResponse = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`);
       if (placeResponse.ok) {
           const place = await placeResponse.json();
-          document.getElementById('place-name').textContent = place.name;
+          // L'API retourne 'title' pas 'name'
+          document.getElementById('place-name').textContent = place.title || place.name || 'Unknown Place';
       } else {
           document.getElementById('place-name').textContent = 'Unknown Place';
       }
@@ -74,11 +92,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('place-name').textContent = 'Unknown Place';
   }
 
-  // Only attach submit fetch if authenticated
+  // Charger les reviews existantes au démarrage
+  fetchPlaceReviews(placeId);
+
+  // Attach submit handler
   if (form) {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         e.stopPropagation();
+        
         const reviewText = document.getElementById('review-text').value.trim();
         let rating = parseInt(document.getElementById('rating').value, 10);
 
@@ -87,8 +109,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Review text cannot be empty.');
             return false;
         }
-        if (isNaN(rating) || rating < 0 || rating > 5) {
-            alert('Rating must be a number between 0 and 5.');
+        if (isNaN(rating) || rating < 1 || rating > 5) {
+            alert('Rating must be a number between 1 and 5.');
             return false;
         }
 
@@ -98,6 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (response.ok) {
                 alert('Review submitted successfully!');
                 form.reset();
+                // Rafraîchir la liste des reviews
                 fetchPlaceReviews(placeId);
             } else {
                 const errorData = await response.json();
@@ -111,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // POST request
+  // POST request to submit review
   async function submitReview(token, placeId, reviewText, rating) {
     return fetch(`http://127.0.0.1:5000/api/v1/reviews`, {
         method: 'POST',
@@ -126,9 +149,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         })
     });
   }
-
-  // Success / Error
-  // (handleResponse is no longer used)
 });
 
 // Fetch and update reviews for a place
@@ -139,11 +159,14 @@ async function fetchPlaceReviews(placeId) {
         const reviews = await response.json();
         const reviewsSection = document.getElementById('reviews-list');
         if (!reviewsSection) return;
+        
         reviewsSection.innerHTML = '<h3>Reviews</h3>';
+        
         if (!reviews || reviews.length === 0) {
             reviewsSection.innerHTML += '<p>No reviews yet.</p>';
             return;
         }
+        
         reviews.forEach(review => {
             const div = document.createElement('div');
             div.classList.add('review-card');
