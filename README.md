@@ -65,7 +65,7 @@ The fourth phase delivers a modern, responsive web interface with modular JavaSc
 * **Place Details**: Dynamic content loading with reviews and amenities display
 * **Modular Architecture**: Separation of concerns with dedicated scripts for authentication, places, and reviews
 * **Responsive Design**: Mobile-first approach ensuring compatibility across devices
-* **Security Integration**: Cookie-based authentication with HttpOnly flags
+* **Security Integration**: Cookie-based authentication
 * **Error Handling**: User-friendly error messages and loading states
 
 > This phase provides a **complete user-facing application** ready for real-world usage.
