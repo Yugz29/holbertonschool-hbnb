@@ -1,572 +1,349 @@
 #!/usr/bin/env python3
-"""
-HBnB Database Population Script
-================================
-Creates realistic test data for the HBnB application including:
-- 1 admin user
-- 5 regular users
-- 12 places with various amenities
-- 20+ reviews
-- 8 amenities
-
-Usage:
-    python scripts/populate_db.py
-
-Requirements:
-    - MySQL/MariaDB running
-    - Database 'hbnb_dev' created
-    - Schema already applied (hbnb_schema.sql)
-"""
+"""HBnB Database Population Script"""
 
 import sys
 import os
 from datetime import datetime
 import uuid
+import random
 
-# Add parent directory to path to import app modules
+# Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app import create_app, db
 from app.models.user import User
 from app.models.place import Place
-from app.models.amenity import Amenity
 from app.models.review import Review
+from app.models.amenity import Amenity
 from werkzeug.security import generate_password_hash
 
-# =====================================
-# Test Data Configuration
-# =====================================
+# Password hash method
+HASH_METHOD = "pbkdf2:sha256"
 
-USERS_DATA = [
-    {
-        "email": "admin@hbnb.com",
-        "password": "Admin123!",
-        "first_name": "Admin",
-        "last_name": "Super",
-        "is_admin": True
-    },
-    {
-        "email": "john.doe@hbnb.com",
-        "password": "User123!",
-        "first_name": "John",
-        "last_name": "Doe",
-        "is_admin": False
-    },
-    {
-        "email": "jane.smith@hbnb.com",
-        "password": "User123!",
-        "first_name": "Jane",
-        "last_name": "Smith",
-        "is_admin": False
-    },
-    {
-        "email": "bob.wilson@hbnb.com",
-        "password": "User123!",
-        "first_name": "Bob",
-        "last_name": "Wilson",
-        "is_admin": False
-    },
-    {
-        "email": "alice.brown@hbnb.com",
-        "password": "User123!",
-        "first_name": "Alice",
-        "last_name": "Brown",
-        "is_admin": False
-    },
-    {
-        "email": "charlie.davis@hbnb.com",
-        "password": "User123!",
-        "first_name": "Charlie",
-        "last_name": "Davis",
-        "is_admin": False
-    }
-]
-
-AMENITIES_DATA = [
-    "WiFi",
-    "Kitchen",
-    "Air Conditioning",
-    "Heating",
-    "Parking",
-    "Pool",
-    "Gym",
-    "Pet Friendly"
-]
-
-PLACES_DATA = [
-    {
-        "title": "Cozy Studio in Paris",
-        "description": "Perfect for solo travelers. Located in the heart of Montmartre with stunning city views.",
-        "price": 75.00,
-        "latitude": 48.8566,
-        "longitude": 2.3522,
-        "owner_email": "john.doe@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Heating"]
-    },
-    {
-        "title": "Luxury Apartment Near Eiffel Tower",
-        "description": "Spacious 3-bedroom apartment with balcony overlooking the Eiffel Tower. Perfect for families.",
-        "price": 250.00,
-        "latitude": 48.8584,
-        "longitude": 2.2945,
-        "owner_email": "john.doe@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Air Conditioning", "Heating", "Parking"]
-    },
-    {
-        "title": "Modern Loft in Le Marais",
-        "description": "Stylish loft in the trendy Marais district. Walking distance to cafes and boutiques.",
-        "price": 120.00,
-        "latitude": 48.8606,
-        "longitude": 2.3522,
-        "owner_email": "jane.smith@hbnb.com",
-        "amenities": ["WiFi", "Air Conditioning", "Heating"]
-    },
-    {
-        "title": "Charming House with Garden",
-        "description": "Peaceful 2-bedroom house with private garden. Ideal for nature lovers.",
-        "price": 150.00,
-        "latitude": 48.8499,
-        "longitude": 2.3370,
-        "owner_email": "jane.smith@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Parking", "Pet Friendly"]
-    },
-    {
-        "title": "Penthouse with Rooftop Terrace",
-        "description": "Exclusive penthouse with 360° views of Paris. Private rooftop terrace with jacuzzi.",
-        "price": 500.00,
-        "latitude": 48.8738,
-        "longitude": 2.2950,
-        "owner_email": "bob.wilson@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Air Conditioning", "Heating", "Pool", "Gym"]
-    },
-    {
-        "title": "Budget-Friendly Room in Belleville",
-        "description": "Clean and comfortable room in multicultural Belleville. Great for backpackers.",
-        "price": 35.00,
-        "latitude": 48.8720,
-        "longitude": 2.3828,
-        "owner_email": "bob.wilson@hbnb.com",
-        "amenities": ["WiFi", "Heating"]
-    },
-    {
-        "title": "Family Apartment Near Louvre",
-        "description": "Spacious 4-bedroom apartment. 5 minutes walk to the Louvre Museum.",
-        "price": 300.00,
-        "latitude": 48.8606,
-        "longitude": 2.3376,
-        "owner_email": "alice.brown@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Air Conditioning", "Heating", "Parking"]
-    },
-    {
-        "title": "Artist's Studio in Montparnasse",
-        "description": "Creative space with natural light. Perfect for artists and photographers.",
-        "price": 90.00,
-        "latitude": 48.8422,
-        "longitude": 2.3219,
-        "owner_email": "alice.brown@hbnb.com",
-        "amenities": ["WiFi", "Heating"]
-    },
-    {
-        "title": "Riverside Apartment with Balcony",
-        "description": "Beautiful apartment along the Seine River. Enjoy breakfast on the balcony.",
-        "price": 180.00,
-        "latitude": 48.8534,
-        "longitude": 2.3488,
-        "owner_email": "charlie.davis@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Air Conditioning", "Heating"]
-    },
-    {
-        "title": "Minimalist Suite in La Défense",
-        "description": "Modern suite in business district. Perfect for professionals.",
-        "price": 110.00,
-        "latitude": 48.8920,
-        "longitude": 2.2380,
-        "owner_email": "charlie.davis@hbnb.com",
-        "amenities": ["WiFi", "Air Conditioning", "Gym", "Parking"]
-    },
-    {
-        "title": "Historic Apartment in Latin Quarter",
-        "description": "Charming apartment in 18th-century building. Steps from Sorbonne University.",
-        "price": 140.00,
-        "latitude": 48.8510,
-        "longitude": 2.3447,
-        "owner_email": "john.doe@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Heating"]
-    },
-    {
-        "title": "Pet-Friendly Cottage in Suburbs",
-        "description": "Cozy cottage with fenced yard. Perfect for families with pets.",
-        "price": 95.00,
-        "latitude": 48.8156,
-        "longitude": 2.3636,
-        "owner_email": "jane.smith@hbnb.com",
-        "amenities": ["WiFi", "Kitchen", "Heating", "Parking", "Pet Friendly"]
-    }
-]
-
-REVIEWS_DATA = [
-    {
-        "place_title": "Cozy Studio in Paris",
-        "reviewer_email": "jane.smith@hbnb.com",
-        "rating": 5,
-        "text": "Amazing location! The view of Sacré-Cœur from the window is breathtaking. Highly recommended!"
-    },
-    {
-        "place_title": "Cozy Studio in Paris",
-        "reviewer_email": "bob.wilson@hbnb.com",
-        "rating": 4,
-        "text": "Great place for a solo trip. A bit small but very cozy and clean."
-    },
-    {
-        "place_title": "Luxury Apartment Near Eiffel Tower",
-        "reviewer_email": "alice.brown@hbnb.com",
-        "rating": 5,
-        "text": "Absolutely stunning! The view of the Eiffel Tower is worth every penny. Perfect for our family vacation."
-    },
-    {
-        "place_title": "Luxury Apartment Near Eiffel Tower",
-        "reviewer_email": "charlie.davis@hbnb.com",
-        "rating": 5,
-        "text": "Best Airbnb experience in Paris! The host was very helpful and the apartment exceeded our expectations."
-    },
-    {
-        "place_title": "Modern Loft in Le Marais",
-        "reviewer_email": "john.doe@hbnb.com",
-        "rating": 4,
-        "text": "Stylish and well-located. Loved the neighborhood! Only downside: a bit noisy at night."
-    },
-    {
-        "place_title": "Modern Loft in Le Marais",
-        "reviewer_email": "bob.wilson@hbnb.com",
-        "rating": 5,
-        "text": "Perfect for exploring the trendy side of Paris. Walking distance to everything!"
-    },
-    {
-        "place_title": "Charming House with Garden",
-        "reviewer_email": "alice.brown@hbnb.com",
-        "rating": 5,
-        "text": "Peaceful oasis in the city. Our kids loved playing in the garden. Highly recommend for families!"
-    },
-    {
-        "place_title": "Charming House with Garden",
-        "reviewer_email": "charlie.davis@hbnb.com",
-        "rating": 4,
-        "text": "Very relaxing stay. The garden is beautiful. A bit far from the center but worth it."
-    },
-    {
-        "place_title": "Penthouse with Rooftop Terrace",
-        "reviewer_email": "jane.smith@hbnb.com",
-        "rating": 5,
-        "text": "Luxury at its finest! The rooftop jacuzzi under the stars was unforgettable."
-    },
-    {
-        "place_title": "Penthouse with Rooftop Terrace",
-        "reviewer_email": "john.doe@hbnb.com",
-        "rating": 5,
-        "text": "Worth every cent! Perfect for a romantic getaway or special celebration."
-    },
-    {
-        "place_title": "Budget-Friendly Room in Belleville",
-        "reviewer_email": "alice.brown@hbnb.com",
-        "rating": 4,
-        "text": "Great value for money! The neighborhood is vibrant and the host was very welcoming."
-    },
-    {
-        "place_title": "Budget-Friendly Room in Belleville",
-        "reviewer_email": "jane.smith@hbnb.com",
-        "rating": 3,
-        "text": "Decent for the price. Room is small but clean. Good for short stays."
-    },
-    {
-        "place_title": "Family Apartment Near Louvre",
-        "reviewer_email": "bob.wilson@hbnb.com",
-        "rating": 5,
-        "text": "Perfect location for sightseeing! We could walk to most attractions. Spacious and comfortable."
-    },
-    {
-        "place_title": "Family Apartment Near Louvre",
-        "reviewer_email": "charlie.davis@hbnb.com",
-        "rating": 5,
-        "text": "Excellent apartment for families. Well-equipped kitchen saved us money on dining out."
-    },
-    {
-        "place_title": "Artist's Studio in Montparnasse",
-        "reviewer_email": "john.doe@hbnb.com",
-        "rating": 4,
-        "text": "Unique and inspiring space. The natural light is amazing for photography."
-    },
-    {
-        "place_title": "Artist's Studio in Montparnasse",
-        "reviewer_email": "jane.smith@hbnb.com",
-        "rating": 5,
-        "text": "Loved the bohemian vibe! Perfect for creative souls. Very quiet and peaceful."
-    },
-    {
-        "place_title": "Riverside Apartment with Balcony",
-        "reviewer_email": "alice.brown@hbnb.com",
-        "rating": 5,
-        "text": "Waking up to the Seine River view was magical! Beautiful apartment in every way."
-    },
-    {
-        "place_title": "Riverside Apartment with Balcony",
-        "reviewer_email": "bob.wilson@hbnb.com",
-        "rating": 4,
-        "text": "Great location and lovely balcony. A bit pricey but worth it for the view."
-    },
-    {
-        "place_title": "Minimalist Suite in La Défense",
-        "reviewer_email": "jane.smith@hbnb.com",
-        "rating": 4,
-        "text": "Very modern and clean. Perfect for business trips. Easy access to metro."
-    },
-    {
-        "place_title": "Minimalist Suite in La Défense",
-        "reviewer_email": "charlie.davis@hbnb.com",
-        "rating": 5,
-        "text": "Exactly what I needed for my work conference. Quiet, professional, and well-equipped."
-    },
-    {
-        "place_title": "Historic Apartment in Latin Quarter",
-        "reviewer_email": "alice.brown@hbnb.com",
-        "rating": 5,
-        "text": "Charming apartment with so much character! Loved the historic details and location."
-    },
-    {
-        "place_title": "Historic Apartment in Latin Quarter",
-        "reviewer_email": "bob.wilson@hbnb.com",
-        "rating": 4,
-        "text": "Great for experiencing authentic Parisian life. The neighborhood is lively and full of history."
-    },
-    {
-        "place_title": "Pet-Friendly Cottage in Suburbs",
-        "reviewer_email": "john.doe@hbnb.com",
-        "rating": 5,
-        "text": "Our dog loved the fenced yard! Peaceful location and very accommodating host."
-    },
-    {
-        "place_title": "Pet-Friendly Cottage in Suburbs",
-        "reviewer_email": "charlie.davis@hbnb.com",
-        "rating": 4,
-        "text": "Nice quiet retreat from the city. Perfect for families with pets."
-    }
-]
-
-
-# =====================================
-# Helper Functions
-# =====================================
 
 def clear_database():
-    """Clear all existing data from database"""
+    """Clear all existing data"""
     print("Clearing existing data...")
     try:
-        db.session.query(Review).delete()
-        db.session.query(Place).delete()
-        db.session.query(Amenity).delete()
-        db.session.query(User).delete()
+        try:
+            db.session.execute(db.text('DELETE FROM place_amenity'))
+        except:
+            pass
+        
+        try:
+            Review.query.delete()
+        except:
+            pass
+        
+        try:
+            Place.query.delete()
+        except:
+            pass
+        
+        try:
+            Amenity.query.delete()
+        except:
+            pass
+        
+        try:
+            User.query.delete()
+        except:
+            pass
+        
         db.session.commit()
-        print("[OK] Database cleared")
+        print("  [OK] Database cleared\n")
     except Exception as e:
         db.session.rollback()
-        print(f"[ERROR] Failed to clear database: {e}")
-        sys.exit(1)
+        print(f"  [WARNING] {e}\n")
 
 
 def create_users():
-    """Create test users"""
-    print("\nCreating users...")
-    users = {}
+    """Create sample users"""
+    print("Creating users...")
     
-    for user_data in USERS_DATA:
+    users_data = [
+        {
+            'email': 'admin@hbnb.com',
+            'password': 'admin123',
+            'first_name': 'Admin',
+            'last_name': 'HBnB',
+            'is_admin': True
+        },
+        {
+            'email': 'john.doe@example.com',
+            'password': 'password123',
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'is_admin': False
+        },
+        {
+            'email': 'jane.smith@example.com',
+            'password': 'password123',
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'is_admin': False
+        },
+        {
+            'email': 'bob.wilson@example.com',
+            'password': 'password123',
+            'first_name': 'Bob',
+            'last_name': 'Wilson',
+            'is_admin': False
+        },
+        {
+            'email': 'alice.brown@example.com',
+            'password': 'password123',
+            'first_name': 'Alice',
+            'last_name': 'Brown',
+            'is_admin': False
+        },
+        {
+            'email': 'charlie.davis@example.com',
+            'password': 'password123',
+            'first_name': 'Charlie',
+            'last_name': 'Davis',
+            'is_admin': False
+        }
+    ]
+    
+    created_users = []
+    for user_data in users_data:
         try:
             user = User(
                 id=str(uuid.uuid4()),
-                email=user_data["email"],
-                password=generate_password_hash(user_data["password"]),
-                first_name=user_data["first_name"],
-                last_name=user_data["last_name"],
-                is_admin=user_data["is_admin"]
+                email=user_data['email'],
+                password=generate_password_hash(user_data['password'], method=HASH_METHOD),
+                first_name=user_data['first_name'],
+                last_name=user_data['last_name'],
+                is_admin=user_data['is_admin']
             )
             db.session.add(user)
-            users[user_data["email"]] = user
-            
-            role = "Admin" if user.is_admin else "User"
-            print(f"  [OK] {role}: {user.first_name} {user.last_name} ({user.email})")
-        
+            db.session.commit()
+            created_users.append(user)
+            print(f"  [OK] Created user: {user.email}")
         except Exception as e:
-            print(f"  [ERROR] Failed to create user {user_data['email']}: {e}")
             db.session.rollback()
-            sys.exit(1)
+            print(f"  [ERROR] Failed to create user {user_data['email']}: {e}")
     
-    db.session.commit()
-    print(f"[OK] Created {len(users)} users")
-    return users
+    print(f"\n✅ Created {len(created_users)} users\n")
+    return created_users
 
 
 def create_amenities():
-    """Create amenities"""
-    print("\nCreating amenities...")
-    amenities = {}
+    """Create sample amenities"""
+    print("Creating amenities...")
     
-    for amenity_name in AMENITIES_DATA:
+    amenities_list = [
+        'WiFi', 'Air Conditioning', 'Heating', 'Kitchen',
+        'Washing Machine', 'Dryer', 'TV', 'Pool', 'Gym',
+        'Parking', 'Elevator', 'Balcony', 'Garden',
+        'Fireplace', 'Hot Tub'
+    ]
+    
+    created_amenities = []
+    for name in amenities_list:
         try:
             amenity = Amenity(
                 id=str(uuid.uuid4()),
-                name=amenity_name
+                name=name
             )
             db.session.add(amenity)
-            amenities[amenity_name] = amenity
-            print(f"  [OK] {amenity_name}")
-        
+            db.session.commit()
+            created_amenities.append(amenity)
+            print(f"  [OK] Created amenity: {name}")
         except Exception as e:
-            print(f"  [ERROR] Failed to create amenity {amenity_name}: {e}")
             db.session.rollback()
-            sys.exit(1)
+            print(f"  [ERROR] Failed to create amenity {name}: {e}")
     
-    db.session.commit()
-    print(f"[OK] Created {len(amenities)} amenities")
-    return amenities
+    print(f"\n✅ Created {len(created_amenities)} amenities\n")
+    return created_amenities
 
 
 def create_places(users, amenities):
-    """Create places with amenities"""
-    print("\nCreating places...")
-    places = {}
+    """Create sample places"""
+    print("Creating places...")
     
-    for place_data in PLACES_DATA:
+    if not users:
+        print("  [ERROR] No users available to create places\n")
+        return []
+    
+    places_data = [
+        {
+            'title': 'Cozy Studio in Paris',
+            'description': 'A comfortable studio apartment in the heart of Paris',
+            'price': 75.0,
+            'latitude': 48.8566,
+            'longitude': 2.3522
+        },
+        {
+            'title': 'Modern Apartment Downtown',
+            'description': 'Stylish 2-bedroom apartment with city views',
+            'price': 120.0,
+            'latitude': 48.8584,
+            'longitude': 2.2945
+        },
+        {
+            'title': 'Beach House Paradise',
+            'description': 'Beautiful beach house with ocean views',
+            'price': 200.0,
+            'latitude': 43.2965,
+            'longitude': 5.3698
+        },
+        {
+            'title': 'Mountain Cabin Retreat',
+            'description': 'Peaceful cabin in the mountains',
+            'price': 90.0,
+            'latitude': 45.1885,
+            'longitude': 5.7245
+        },
+        {
+            'title': 'Luxury Penthouse',
+            'description': 'High-end penthouse with panoramic views',
+            'price': 350.0,
+            'latitude': 48.8606,
+            'longitude': 2.3376
+        },
+        {
+            'title': 'Charming Cottage',
+            'description': 'Rustic cottage in countryside',
+            'price': 65.0,
+            'latitude': 48.8738,
+            'longitude': 2.2950
+        },
+        {
+            'title': 'Urban Loft',
+            'description': 'Industrial-style loft in trendy neighborhood',
+            'price': 110.0,
+            'latitude': 48.8566,
+            'longitude': 2.3522
+        },
+        {
+            'title': 'Family Villa',
+            'description': 'Spacious villa perfect for families',
+            'price': 180.0,
+            'latitude': 43.6047,
+            'longitude': 1.4442
+        }
+    ]
+    
+    created_places = []
+    for i, place_data in enumerate(places_data):
         try:
-            owner = users.get(place_data["owner_email"])
-            if not owner:
-                print(f"  [WARNING] Owner not found: {place_data['owner_email']}")
-                continue
+            owner = users[i % len(users)]
             
             place = Place(
                 id=str(uuid.uuid4()),
-                title=place_data["title"],
-                description=place_data["description"],
-                price=place_data["price"],
-                latitude=place_data["latitude"],
-                longitude=place_data["longitude"],
+                title=place_data['title'],
+                description=place_data['description'],
+                price=place_data['price'],
+                latitude=place_data['latitude'],
+                longitude=place_data['longitude'],
                 owner_id=owner.id
             )
             
-            # Add amenities
-            for amenity_name in place_data.get("amenities", []):
-                amenity = amenities.get(amenity_name)
-                if amenity:
-                    place.amenities.append(amenity)
+            # Add random amenities (3-5 per place)
+            if amenities:
+                num_amenities = random.randint(3, min(5, len(amenities)))
+                selected_amenities = random.sample(amenities, num_amenities)
+                place.amenities.extend(selected_amenities)
             
             db.session.add(place)
-            places[place_data["title"]] = place
-            
-            amenities_count = len(place_data.get("amenities", []))
-            print(f"  [OK] {place.title} (${place.price}/night) - {amenities_count} amenities")
-        
+            db.session.commit()
+            created_places.append(place)
+            print(f"  [OK] Created place: {place.title} (Owner: {owner.email})")
         except Exception as e:
-            print(f"  [ERROR] Failed to create place {place_data['title']}: {e}")
             db.session.rollback()
-            sys.exit(1)
+            print(f"  [ERROR] Failed to create place: {e}")
     
-    db.session.commit()
-    print(f"[OK] Created {len(places)} places")
-    return places
+    print(f"\n✅ Created {len(created_places)} places\n")
+    return created_places
 
 
 def create_reviews(users, places):
-    """Create reviews"""
-    print("\nCreating reviews...")
-    review_count = 0
+    """Create sample reviews"""
+    print("Creating reviews...")
     
-    for review_data in REVIEWS_DATA:
+    if not users or not places:
+        print("  [ERROR] No users or places available to create reviews\n")
+        return []
+    
+    reviews_data = [
+        {'comment': 'Great place, very comfortable!', 'rating': 5},
+        {'comment': 'Nice location but a bit noisy', 'rating': 3},
+        {'comment': 'Perfect for a weekend getaway', 'rating': 4},
+        {'comment': 'Excellent host, highly recommended', 'rating': 5},
+        {'comment': 'Good value for money', 'rating': 4},
+        {'comment': 'Could be cleaner', 'rating': 2},
+        {'comment': 'Amazing views and very spacious', 'rating': 5},
+        {'comment': 'Decent place, nothing special', 'rating': 3},
+        {'comment': 'Loved every minute of our stay', 'rating': 5},
+        {'comment': 'Not as described, disappointed', 'rating': 2},
+        {'comment': 'Perfect location and amenities', 'rating': 5}
+    ]
+    
+    created_reviews = []
+    for i, review_data in enumerate(reviews_data):
         try:
-            reviewer = users.get(review_data["reviewer_email"])
-            place = places.get(review_data["place_title"])
+            place = places[i % len(places)]
+            user_index = (i + 1) % len(users)
+            reviewer = users[user_index]
             
-            if not reviewer:
-                print(f"  [WARNING] Reviewer not found: {review_data['reviewer_email']}")
-                continue
-            
-            if not place:
-                print(f"  [WARNING] Place not found: {review_data['place_title']}")
-                continue
-            
-            # Check if user owns the place
+            # Skip if user is reviewing their own place
             if place.owner_id == reviewer.id:
-                print(f"  [SKIP] {reviewer.first_name} cannot review their own place")
+                print(f"  [SKIP] User cannot review their own place")
                 continue
             
             review = Review(
                 id=str(uuid.uuid4()),
-                text=review_data["text"],
-                rating=review_data["rating"],
+                text=review_data['comment'],
+                rating=review_data['rating'],
                 user_id=reviewer.id,
                 place_id=place.id
             )
-            
             db.session.add(review)
-            review_count += 1
-            
-            print(f"  [OK] {reviewer.first_name} -> {place.title} ({review_data['rating']}/5)")
-        
+            db.session.commit()
+            created_reviews.append(review)
+            print(f"  [OK] Created review for '{place.title}' by {reviewer.email}")
         except Exception as e:
-            print(f"  [WARNING] Failed to create review: {e}")
             db.session.rollback()
-            continue
+            print(f"  [ERROR] Failed to create review: {e}")
     
-    db.session.commit()
-    print(f"[OK] Created {review_count} reviews")
+    print(f"\n✅ Created {len(created_reviews)} reviews\n")
+    return created_reviews
 
 
-# =====================================
-# Main Population Function
-# =====================================
-
-def populate_database():
-    """Main function to populate database"""
-    print("=" * 60)
+def main():
+    """Main population function"""
+    print("\n" + "="*60)
     print("HBnB Database Population Script")
-    print("=" * 60)
+    print("="*60 + "\n")
     
-    clear_database()
-    users = create_users()
-    amenities = create_amenities()
-    places = create_places(users, amenities)
-    create_reviews(users, places)
-    
-    print("\n" + "=" * 60)
-    print("Database population completed successfully!")
-    print("=" * 60)
-    print("\nSummary:")
-    print(f"  - Users: {len(users)}")
-    print(f"  - Places: {len(places)}")
-    print(f"  - Amenities: {len(amenities)}")
-    print(f"  - Reviews: {db.session.query(Review).count()}")
-    print("\nTest Credentials:")
-    print("  Admin:")
-    print("    Email: admin@hbnb.com")
-    print("    Password: Admin123!")
-    print("  Regular User:")
-    print("    Email: john.doe@hbnb.com")
-    print("    Password: User123!")
-    print("\nStart the application with: python run.py")
-    print("=" * 60)
-
-
-# =====================================
-# Script Entry Point
-# =====================================
-
-if __name__ == "__main__":
     app = create_app()
-    
     with app.app_context():
         try:
-            populate_database()
-        except KeyboardInterrupt:
-            print("\n\nPopulation interrupted by user")
-            sys.exit(0)
+            clear_database()
+            users = create_users()
+            amenities = create_amenities()
+            places = create_places(users, amenities)
+            reviews = create_reviews(users, places)
+            
+            print("\n" + "="*60)
+            print("✅ Database population completed successfully!")
+            print("="*60)
+            print(f"\nSummary:")
+            print(f"  - Users: {len(users)}")
+            print(f"  - Amenities: {len(amenities)}")
+            print(f"  - Places: {len(places)}")
+            print(f"  - Reviews: {len(reviews)}")
+            print(f"\n💡 Admin login: admin@hbnb.com / admin123")
+            print(f"💡 Test user: john.doe@example.com / password123\n")
+            
         except Exception as e:
-            print(f"\nFatal error: {e}")
+            print(f"\n❌ Population failed: {e}\n")
             import traceback
             traceback.print_exc()
             sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

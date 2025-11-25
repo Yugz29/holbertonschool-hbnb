@@ -94,11 +94,18 @@ part4/
 git clone https://github.com/Yugz29/holbertonschool-hbnb.git
 cd holbertonschool-hbnb/part4
 
+# Create virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
 # Install dependencies
 pip install -r requirements.txt
 
-# Initialize database
-sqlite3 instance/hbnb.db < sql/hbnb_schema.sql
+# Create instance directory
+mkdir -p instance
+
+# Initialize database with Flask-SQLAlchemy
+python3 -c "from app import create_app, db; app = create_app(); app.app_context().push(); db.create_all(); print('✅ Database created!')"
 
 # Populate with sample data
 python3 scripts/populate_db.py
@@ -118,7 +125,7 @@ Open your browser and navigate to: http://127.0.0.1:5000/index
 ### Admin User
 ```
 Email: admin@hbnb.io
-Password: admin1234
+Password: admin123
 ```
 
 ### Regular Users
