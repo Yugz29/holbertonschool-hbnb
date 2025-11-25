@@ -1,5 +1,5 @@
 -- ========================
--- HBnB CRUD Test Script (Version corrigée)
+-- HBnB CRUD Test Script
 -- ========================
 
 -- Nettoyage préalable
