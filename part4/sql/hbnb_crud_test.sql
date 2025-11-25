@@ -1,63 +1,147 @@
 -- ========================
--- HBnB CRUD Test Script
+-- HBnB CRUD Test Script (Version corrigée)
 -- ========================
 
--- Table Place
--- Add a new place
-INSERT INTO Place (id, title, description, price, latitude, longitude, owner_id)
-VALUES (UUID(), 'Test Apartment', 'Test apartment downtown', 50.00, 48.8566, 2.3522, '36c9050e-ddd3-4c3b-9731-9f487208bbc1');
+-- Nettoyage préalable
+DELETE FROM place_amenities 
+WHERE place_id IN (SELECT id FROM places WHERE title = 'Test Apartment');
 
--- Check insertion
-SELECT * FROM Place;
+DELETE FROM reviews 
+WHERE place_id IN (SELECT id FROM places WHERE title = 'Test Apartment');
 
--- Update the price
-UPDATE Place SET price = 55.00 WHERE title = 'Test Apartment';
+DELETE FROM places WHERE title = 'Test Apartment';
 
--- Check update
-SELECT * FROM Place WHERE title = 'Test Apartment';
+-- ========================
+-- 1. TEST: Create Place
+-- ========================
 
--- Table Review
--- Add a review
-INSERT INTO Review (id, text, rating, user_id, place_id)
+-- Vérifier qu'un user existe (prendre le premier disponible)
+SET @test_user_id = (SELECT id FROM users LIMIT 1);
+
+-- Si aucun user n'existe, en créer un
+INSERT INTO users (id, first_name, last_name, email, password, is_admin)
+SELECT UUID(), 'Test', 'Owner', 'test_owner@hbnb.com', 'hashed_pass', 0
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'test_owner@hbnb.com');
+
+-- Utiliser le user de test
+SET @test_user_id = (SELECT id FROM users WHERE email = 'test_owner@hbnb.com');
+
+-- Créer un place de test
+INSERT INTO places (id, title, description, price, latitude, longitude, owner_id)
+VALUES (UUID(), 'Test Apartment', 'Test apartment downtown', 50.00, 48.8566, 2.3522, @test_user_id);
+
+-- Vérifier l'insertion
+SELECT 'Created place:' AS status;
+SELECT * FROM places WHERE title = 'Test Apartment';
+
+-- ========================
+-- 2. TEST: Update Place
+-- ========================
+
+-- Modifier le prix
+UPDATE places SET price = 55.00 WHERE title = 'Test Apartment';
+
+-- Vérifier la modification
+SELECT 'Updated price:' AS status;
+SELECT * FROM places WHERE title = 'Test Apartment';
+
+-- ========================
+-- 3. TEST: Create Review
+-- ========================
+
+-- Récupérer l'ID du place
+SET @test_place_id = (SELECT id FROM places WHERE title = 'Test Apartment' LIMIT 1);
+
+-- Créer un deuxième user pour la review (on ne peut pas reviewer son propre place)
+INSERT INTO users (id, first_name, last_name, email, password, is_admin)
+SELECT UUID(), 'Test', 'Reviewer', 'test_reviewer@hbnb.com', 'hashed_pass', 0
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'test_reviewer@hbnb.com');
+
+SET @test_reviewer_id = (SELECT id FROM users WHERE email = 'test_reviewer@hbnb.com');
+
+-- Créer une review
+INSERT INTO reviews (id, text, rating, user_id, place_id)
+VALUES (UUID(), 'Great place!', 5, @test_reviewer_id, @test_place_id);
+
+-- Vérifier l'insertion
+SELECT 'Created review:' AS status;
+SELECT * FROM reviews WHERE place_id = @test_place_id;
+
+-- ========================
+-- 4. TEST: Update Review
+-- ========================
+
+-- Modifier la note
+UPDATE reviews SET rating = 4 WHERE text = 'Great place!';
+
+-- Vérifier la modification
+SELECT 'Updated review:' AS status;
+SELECT * FROM reviews WHERE text = 'Great place!';
+
+-- ========================
+-- 5. TEST: Many-to-Many (Place-Amenity)
+-- ========================
+
+-- Vérifier qu'une amenity WiFi existe
+INSERT INTO amenities (id, name)
+SELECT UUID(), 'WiFi'
+WHERE NOT EXISTS (SELECT 1 FROM amenities WHERE name = 'WiFi');
+
+-- Lier le place à l'amenity
+INSERT INTO place_amenities (place_id, amenity_id)
 VALUES (
-    UUID(),
-    'Great place!',
-    5,
-    '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
-    (SELECT id FROM Place WHERE title = 'Test Apartment' LIMIT 1)
+    @test_place_id,
+    (SELECT id FROM amenities WHERE name = 'WiFi' LIMIT 1)
 );
 
--- Check insertion
-SELECT * FROM Review;
+-- Vérifier la liaison
+SELECT 'Linked amenity:' AS status;
+SELECT p.title, a.name 
+FROM places p
+JOIN place_amenities pa ON p.id = pa.place_id
+JOIN amenities a ON pa.amenity_id = a.id
+WHERE p.id = @test_place_id;
 
--- Update the review
-UPDATE Review SET rating = 4 WHERE text = 'Great place!';
+-- ========================
+-- 6. TEST: Delete Operations
+-- ========================
 
--- Delete the review
-DELETE FROM Review WHERE text = 'Great place!';
+-- Supprimer la liaison
+DELETE FROM place_amenities
+WHERE place_id = @test_place_id
+AND amenity_id = (SELECT id FROM amenities WHERE name = 'WiFi' LIMIT 1);
 
--- Table Place_Amenity (Many-to-Many)
--- Link a place to an amenity
-INSERT INTO Place_Amenity (place_id, amenity_id)
-VALUES (
-    (SELECT id FROM Place WHERE title = 'Test Apartment' LIMIT 1),
-    (SELECT id FROM Amenity WHERE name = 'WiFi')
-);
+SELECT 'Deleted amenity link' AS status;
 
--- Check insertion
-SELECT * FROM Place_Amenity;
+-- Supprimer la review
+DELETE FROM reviews WHERE text = 'Great place!';
 
--- Delete the link
-DELETE FROM Place_Amenity
-WHERE place_id = (SELECT id FROM Place WHERE title = 'Test Apartment' LIMIT 1)
-AND amenity_id = (SELECT id FROM Amenity WHERE name = 'WiFi');
+SELECT 'Deleted review' AS status;
 
--- Cleanup: remove the test place
-DELETE FROM Place WHERE title = 'Test Apartment';
+-- Supprimer le place (cascade supprimera aussi les reviews restantes)
+DELETE FROM places WHERE title = 'Test Apartment';
 
--- Final verification
-SELECT * FROM User;
-SELECT * FROM Place;
-SELECT * FROM Review;
-SELECT * FROM Amenity;
-SELECT * FROM Place_Amenity;
+SELECT 'Deleted place' AS status;
+
+-- ========================
+-- 7. Vérification finale
+-- ========================
+
+SELECT 'Final state - Users:' AS status;
+SELECT COUNT(*) AS user_count FROM users;
+
+SELECT 'Final state - Places:' AS status;
+SELECT COUNT(*) AS place_count FROM places;
+
+SELECT 'Final state - Reviews:' AS status;
+SELECT COUNT(*) AS review_count FROM reviews;
+
+SELECT 'Final state - Amenities:' AS status;
+SELECT COUNT(*) AS amenity_count FROM amenities;
+
+SELECT 'Final state - Place-Amenities:' AS status;
+SELECT COUNT(*) AS link_count FROM place_amenities;
+
+SELECT '========================' AS status;
+SELECT 'CRUD Test completed successfully!' AS status;
+SELECT '========================' AS status;
