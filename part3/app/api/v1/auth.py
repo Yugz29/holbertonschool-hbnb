@@ -1,7 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+
 
 
 api = Namespace('auth', description='Authentication operations')
@@ -39,11 +40,11 @@ class Login(Resource):
 class ProtectedResource(Resource):
     @jwt_required()
     def get(self):
-         """A protected endpoint that requires a valid JWT token"""
-         print("jwt------")
-         print(get_jwt_identity())
-         current_user = get_jwt_identity() # Retrieve the user's identity from the token
-         #if you need to see if the user is an admin or not, you can access additional claims using get_jwt() :
-         # addtional claims = get_jwt()
-         #additional claims["is_admin"] -> True or False
-         return {'message': f'Hello, user {current_user}'}, 200
+        current_user = get_jwt_identity()  # Récupère l'ID de l'utilisateur
+        claims = get_jwt()  # ⬅️ Récupère TOUS les claims (y compris is_admin)
+        is_admin = claims["is_admin"]  # Accède à is_admin
+
+        return {
+            "message": f"Hello, user {current_user}",
+            "is_admin": is_admin  # Retourne aussi le statut admin
+        }, 200

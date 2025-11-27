@@ -15,11 +15,11 @@ class Place(BaseModel, db.Model):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
     
     """Relationships"""
-    user = db.relationship('User', back_populates='places')
-    reviews = db.relationship('Review', back_populates='place', lazy=True)
+    owner = db.relationship('User', back_populates='places')
+    reviews = db.relationship('Review', back_populates='place', lazy='joined')
     amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery', back_populates='places')
 
     def to_dict(self):
@@ -31,5 +31,16 @@ class Place(BaseModel, db.Model):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
+            "reviews": [
+                {
+                    "id": review.id,
+                    "text": review.text,
+                    "rating": review.rating,
+                    "user_id": review.user_id,
+                    "user_name": f"{review.user.first_name} {review.user.last_name}" if review.user else "Anonymous",
+                    "created_at": review.created_at.isoformat() if review.created_at else None,
+                } for review in self.reviews
+            ],
+            "amenities": [amenity.to_dict() for amenity in self.amenities],
         })
         return base_dict

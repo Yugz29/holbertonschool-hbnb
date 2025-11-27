@@ -46,15 +46,15 @@ class PlaceList(Resource):
         
         data['owner_id'] = current_user_id
         
-        amenities_names = data.get('amenities', [])
+        amenities_ids = data.get('amenities', [])
         valid_amenities = []
-        
-        for amenity_name in amenities_names:
-            amenity = facade.get_amenity_by_name(amenity_name)
+        for amenity_id in amenities_ids:
+            if hasattr(amenity_id, 'id'):
+                amenity_id = amenity_id.id
+            amenity = facade.get_amenity(amenity_id)
             if not amenity:
-                return {'error': f"Amenity '{amenity_name}' does not exist"}, 400
-            valid_amenities.append(amenity_name)  # Garder le nom
-        
+                return {'error': f"amenity with ID {amenity_id} does not exist"}, 400
+            valid_amenities.append(amenity)
         data['amenities'] = valid_amenities
 
         try:
@@ -99,7 +99,7 @@ class PlaceResource(Resource):
         if lat is None or not (-90 <= lat <= 90):
             return {'error': 'Latitude must be between -90 and 90'}, 400
         if lng is None or not (-180 <= lng <= 180):
-            return {'error': 'Longitude must be between -180 and 180'}, 400
+           return {'error': 'Longitude must be between -180 and 180'}, 400
 
         if not data:
             return {'error': 'Invalid input data'}, 400
@@ -114,17 +114,18 @@ class PlaceResource(Resource):
         if 'owner_id' in data:
             del data['owner_id']
         
-        # Modification ici : utiliser les noms au lieu des IDs
-        amenities_names = data.get('amenities')
-        if amenities_names is None or not amenities_names:
+        amenities_ids = data.get('amenities')
+        if amenities_ids is None or not amenities_ids:
             return {'error': 'Amenities list is required'}, 400
         
         valid_amenities = []
-        for amenity_name in amenities_names:  # Changé : amenity_name au lieu de amenity_id
-            amenity = facade.get_amenity_by_name(amenity_name)  # Changé : utiliser get_amenity_by_name
+        for amenity_id in amenities_ids:
+            if hasattr(amenity_id, 'id'):
+                amenity_id = amenity_id.id
+            amenity = facade.get_amenity(amenity_id)
             if not amenity:
-                return {'error': f"Amenity '{amenity_name}' does not exist"}, 400
-            valid_amenities.append(amenity_name)  # Changé : ajouter le nom, pas l'objet
+                return {'error': f"amenity with ID {amenity_id} does not exist"}, 400
+            valid_amenities.append(amenity)
 
         data['amenities'] = valid_amenities
         

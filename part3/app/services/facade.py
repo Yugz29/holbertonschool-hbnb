@@ -1,3 +1,4 @@
+from sqlalchemy.orm import joinedload
 from app.persistence.repositories.user_repository import UserRepository
 from app.persistence.repository import SQLAlchemyRepository
 from app.models.user import User
@@ -51,6 +52,13 @@ class HBnBFacade:
         if not amenity:
             return None
         return amenity
+    
+    def get_amenity_by_name(self, name):
+        amenities = self.amenity_repo.get_all()
+        for amenity in amenities:
+            if amenity.name.lower() == name.lower():
+                return amenity
+        return None
 
     def get_all_amenities(self):
         return self.amenity_repo.get_all()
@@ -78,31 +86,36 @@ class HBnBFacade:
             place_data['owner'] = owner
             del place_data['owner_id']
 
-        amenities_ids = place_data.pop("amenities", [])
+        amenities_data = place_data.pop("amenities", [])
+        
+        # Créer la place d'abord
         place = Place(**place_data)
-        self.place_repo.add(place)
-
-        for aid in amenities_ids:
-            amenity = self.get_amenity(aid)
+        
+        # Récupérer les objets amenity et les assigner
+        amenities_list = []
+        for amenity_name in amenities_data:
+            amenity = self.get_amenity_by_name(amenity_name)
             if amenity:
-                place.add_amenity(amenity)
-
+                amenities_list.append(amenity)
+        
+        # Assigner directement la liste (grâce à la relationship SQLAlchemy)
+        place.amenities = amenities_list
+        
+        # Sauvegarder la place avec ses amenities
+        self.place_repo.add(place)
+        
         return place
 
     def get_place(self, place_id):
         place = self.place_repo.get(place_id)
         if not place:
             return None
-
-        place.owner = self.user_repo.get(place.owner_id)
-        place.amenities = [self.amenity_repo.get(aid) for aid in getattr(place, 'amenity_ids', [])]
+        # Les amenities sont déjà chargées via la relationship
         return place
 
     def get_all_places(self):
         places = self.place_repo.get_all()
-        for place in places:
-            place.owner = self.user_repo.get(place.owner_id)
-            place.amenities = [self.amenity_repo.get(aid) for aid in getattr(place, 'amenity_ids', [])]
+        # Les amenities sont déjà chargées via la relationship
         return places
 
     def update_place(self, place_id, place_data):
@@ -118,13 +131,13 @@ class HBnBFacade:
             del place_data['owner_id']
 
         if 'amenities' in place_data:
-            valid_amenities = []
-            for amenity_id in place_data['amenities']:
-                amenity = self.get_amenity(amenity_id)
+            amenities_list = []
+            for amenity_name in place_data['amenities']:
+                amenity = self.get_amenity_by_name(amenity_name)
                 if not amenity:
-                    raise ValueError(f"Amenity {amenity_id} does not exist")
-                valid_amenities.append(amenity)
-            place_data['amenities'] = valid_amenities
+                    raise ValueError(f"Amenity '{amenity_name}' does not exist")
+                amenities_list.append(amenity)
+            place_data['amenities'] = amenities_list
 
         self.place_repo.update(place_id, place_data)
         return self.get_place(place_id)
@@ -164,12 +177,12 @@ class HBnBFacade:
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        all_reviews = self.get_all_reviews()
-        matching_reviews = []
-        for review in all_reviews:
-            if review.place_id == place_id:
-                matching_reviews.append(review)
-        return matching_reviews
+        return (
+            Review.query
+            .filter_by(place_id=place_id)
+            .options(joinedload(Review.user))
+            .all()
+        )
 
     def update_review(self, review_id, review_data):
         review = self.get_review(review_id)
@@ -209,3 +222,8 @@ class HBnBFacade:
             return None
         self.review_repo.delete(review_id)
         return review
+
+    def user_has_reviewed_place(self, user_id, place_id):
+        """Return True if the user has already reviewed the given place"""
+        reviews = self.review_repo.get_all()
+        return any(r.user_id == user_id and r.place_id == place_id for r in reviews)
