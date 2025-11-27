@@ -99,8 +99,18 @@ pip install -r requirements.txt
 
 ### **4. Configure the Database**
 
-Ensure you have a supported relational database installed (e.g., PostgreSQL, MySQL, or SQLite).  
-Update the `SQLALCHEMY_DATABASE_URI` in `config.py` with your database connection string.
+Create daabase schema :
+
+```bash
+sqlite3 sql/hbnb.db < sql/hbnb_schema.sql
+```
+
+Populate the database :
+
+```bash
+python scripts/populate_db.py
+```
+
 
 ### **5. Run Database Migrations**
 
